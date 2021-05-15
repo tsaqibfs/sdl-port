@@ -263,20 +263,6 @@ class DataDownloader extends Thread
 				if( ! matched )
 					throw new IOException();
 				Status.setText( res.getString(R.string.download_unneeded) );
-				for( int i = 1; i < downloadUrls.length; i++ )
-				{
-					if( downloadUrls[i].indexOf("obb:") == 0 ) // APK expansion file provided by Google Play
-					{
-						String url = getObbFilePath(downloadUrls[i]);
-						if (new File(url).length() > 256)
-						{
-							Writer writer = new OutputStreamWriter(new FileOutputStream(url), "UTF-8");
-							writer.write("Extracted and truncated\n");
-							writer.close();
-							Log.i("SDL", "Truncated file from expansion: " + url);
-						}
-					}
-				}
 				return true;
 			} catch ( IOException e ) {
 				forceOverwrite = true;
