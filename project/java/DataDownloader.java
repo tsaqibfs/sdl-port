@@ -319,21 +319,33 @@ class DataDownloader extends Thread
 			Status.setText( downloadCount + "/" + downloadTotal + ": " + res.getString(R.string.connecting_to, url) );
 			if( url.indexOf("obb:") == 0 ) // APK expansion file provided by Google Play
 			{
-				if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M)
-				{
-					int permissionCheck = Parent.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-					if (permissionCheck != PackageManager.PERMISSION_GRANTED && !Parent.writeExternalStoragePermissionDialogAnswered)
+				url = getObbFilePath(url);
+				InputStream stream1 = null;
+
+				try {
+					stream1 = new FileInputStream(url);
+					stream1.read();
+					stream1.close();
+					Log.i("SDL", "Fetching file from expansion: " + url);
+					FileInExpansion = true;
+					break;
+				} catch( Exception ee ) {
+					Log.i("SDL", "Failed to open file, requesting storage read permission: " + url);
+
+					if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M)
 					{
-						Parent.requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
-						while( !Parent.writeExternalStoragePermissionDialogAnswered )
+						int permissionCheck = Parent.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
+						if (permissionCheck != PackageManager.PERMISSION_GRANTED && !Parent.readExternalStoragePermissionDialogAnswered)
 						{
-							try{ Thread.sleep(300); } catch (InterruptedException e) {}
+							Parent.requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 0);
+							while( !Parent.readExternalStoragePermissionDialogAnswered )
+							{
+								try{ Thread.sleep(300); } catch (InterruptedException e) {}
+							}
 						}
 					}
 				}
 
-				url = getObbFilePath(url);
-				InputStream stream1 = null;
 				try {
 					stream1 = new FileInputStream(url);
 					stream1.read();
@@ -501,15 +513,7 @@ class DataDownloader extends Thread
 
 		try {
 			stream.close();
-			if( FileInExpansion )
-			{
-				Writer writer = new OutputStreamWriter(new FileOutputStream(url), "UTF-8");
-				writer.write("Extracted and truncated\n");
-				writer.close();
-				Log.i("SDL", "Truncated file from expansion: " + url);
-			}
 		} catch( java.io.IOException e ) {
-			Log.i("SDL", "Error truncating file from expansion: " + url);
 		};
 
 		return true;

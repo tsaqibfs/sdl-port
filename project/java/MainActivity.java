@@ -1420,6 +1420,11 @@ public class MainActivity extends Activity
 		{
 			Log.i("SDL", "libSDL: Record audio permission: " + (grantResults[0] == PackageManager.PERMISSION_GRANTED ? "GRANTED" : "DENIED"));
 		}
+		if (Manifest.permission.READ_EXTERNAL_STORAGE.equals(permissions[0]))
+		{
+			Log.i("SDL", "libSDL: Read external storage permission: " + (grantResults[0] == PackageManager.PERMISSION_GRANTED ? "GRANTED" : "DENIED"));
+			readExternalStoragePermissionDialogAnswered = true;
+		}
 		if (Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[0]))
 		{
 			Log.i("SDL", "libSDL: Write external storage permission: " + (grantResults[0] == PackageManager.PERMISSION_GRANTED ? "GRANTED" : "DENIED"));
@@ -1461,6 +1466,7 @@ public class MainActivity extends Activity
 
 	public LinkedList<Integer> textInput = new LinkedList<Integer> ();
 	public static MainActivity instance = null;
+	public boolean readExternalStoragePermissionDialogAnswered = false;
 	public boolean writeExternalStoragePermissionDialogAnswered = false;
 }
 
