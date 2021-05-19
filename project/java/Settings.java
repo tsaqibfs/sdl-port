@@ -665,6 +665,10 @@ public class Settings
 		try {
 			nativeSetEnv( "ANDROID_OBB_DIR", p.getObbDir().getAbsolutePath() );
 		} catch (Exception eeeeeee) {}
+		if( p.ObbMountPath != null )
+		{
+			nativeSetEnv( "ANDROID_OBB_MOUNT_DIR", p.ObbMountPath );
+		}
 		try {
 			nativeSetEnv( "ANDROID_APP_NAME", p.getString(p.getApplicationInfo().labelRes) );
 		} catch (Exception eeeeee) {}

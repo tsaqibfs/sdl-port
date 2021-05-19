@@ -57,6 +57,9 @@ import android.content.DialogInterface;
 import android.Manifest;
 import android.content.pm.PackageManager;
 
+import android.os.storage.StorageManager;
+import android.os.storage.OnObbStateChangeListener;
+
 
 class CountingInputStream extends BufferedInputStream
 {
@@ -292,6 +295,9 @@ class DataDownloader extends Thread
 		boolean DoNotUnzip = false;
 		boolean FileInAssets = false;
 		boolean FileInExpansion = false;
+		boolean MountObb = false;
+		final boolean[] ObbMounted = new boolean[] { false };
+		final boolean[] ObbMountedError = new boolean[] { false };
 		String url = "";
 
 		int downloadUrlIndex = 1;
@@ -317,7 +323,7 @@ class DataDownloader extends Thread
 					partialDownloadLen = partialDownload.length();
 			}
 			Status.setText( downloadCount + "/" + downloadTotal + ": " + res.getString(R.string.connecting_to, url) );
-			if( url.indexOf("obb:") == 0 ) // APK expansion file provided by Google Play
+			if( url.indexOf("obb:") == 0 || url.indexOf("mnt:") == 0 ) // APK expansion file provided by Google Play
 			{
 				url = getObbFilePath(url);
 				InputStream stream1 = null;
@@ -328,6 +334,8 @@ class DataDownloader extends Thread
 					stream1.close();
 					Log.i("SDL", "Fetching file from expansion: " + url);
 					FileInExpansion = true;
+					if( url.indexOf("mnt:") == 0 )
+						MountObb = true;
 					break;
 				} catch( Exception ee ) {
 					Log.i("SDL", "Failed to open file, requesting storage read permission: " + url);
@@ -352,6 +360,8 @@ class DataDownloader extends Thread
 					stream1.close();
 					Log.i("SDL", "Fetching file from expansion: " + url);
 					FileInExpansion = true;
+					if( url.indexOf("mnt:") == 0 )
+						MountObb = true;
 					break;
 				} catch( Exception e ) {
 					Log.i("SDL", "Failed to open file: " + url);
@@ -422,6 +432,50 @@ class DataDownloader extends Thread
 			}
 		}
 		
+		if( MountObb )
+		{
+			StorageManager sm = (StorageManager) Parent.getSystemService(Context.STORAGE_SERVICE);
+			if( !sm.mountObb(url, null, new OnObbStateChangeListener()
+					{
+						public void onObbStateChange(String path, int state)
+						{
+							if (state == OnObbStateChangeListener.MOUNTED ||
+								state == OnObbStateChangeListener.ERROR_ALREADY_MOUNTED)
+							{
+								ObbMounted[0] = true;
+							}
+							else
+							{
+								ObbMountedError[0] = true;
+							}
+						}
+					}) )
+			{
+				Log.i("SDL", "Cannot mount OBB file '" + url + "'");
+				Status.setText( res.getString(R.string.error_dl_from, url) );
+				return false;
+			}
+			while( !ObbMounted[0] )
+			{
+				try{ Thread.sleep(300); } catch (InterruptedException e) {}
+				if( ObbMountedError[0] )
+				{
+					Log.i("SDL", "Cannot mount OBB file '" + url + "'");
+					Status.setText( res.getString(R.string.error_dl_from, url) );
+					return false;
+				}
+			}
+			Parent.ObbMountPath = sm.getMountedObbPath(url);
+			if( Parent.ObbMountPath == null )
+			{
+				Log.i("SDL", "Cannot mount OBB file '" + url + "'");
+				Status.setText( res.getString(R.string.error_dl_from, url) );
+				return false;
+			}
+			Log.i("SDL", "Mounted OBB file '" + url + "' to path " + Parent.ObbMountPath);
+			return true;
+		}
+
 		if( FileInExpansion )
 		{
 			Log.i("SDL", "Count file size: '" + url);

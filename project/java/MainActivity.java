@@ -1468,6 +1468,8 @@ public class MainActivity extends Activity
 	public static MainActivity instance = null;
 	public boolean readExternalStoragePermissionDialogAnswered = false;
 	public boolean writeExternalStoragePermissionDialogAnswered = false;
+
+	public String ObbMountPath = null;
 }
 
 // *** HONEYCOMB / ICS FIX FOR FULLSCREEN MODE, by lmak ***
