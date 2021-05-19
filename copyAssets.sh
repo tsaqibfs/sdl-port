@@ -17,11 +17,11 @@ if [ "$1" = "pack-binaries-bundle" ]; then
 	rm -rf base
 	mkdir -p base
 	mv lib base/
-	zip -r "$APK" base || exit 1
+	zip -r -D "$APK" base || exit 1
 	mv base/lib ./
 	rm -rf base
 else
-	zip -r "$APK" lib || exit 1
+	zip -r -D "$APK" lib || exit 1
 fi
 cd ../../../../
 exit 0
