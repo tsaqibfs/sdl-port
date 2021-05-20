@@ -10,11 +10,3 @@ index 7956ad1..37b9de5 100644
  			</intent-filter>
  		</activity>
  		<meta-data android:name="com.sec.android.support.multiwindow" android:value="true" /> <!-- Samsung's multiwindow -->
-@@ -47,7 +47,6 @@
- 	</application>
- 
- 	<!-- ==INTERNET== --> <uses-permission android:name="android.permission.INTERNET" />
--	<!-- ==EXTERNAL_STORAGE== --> <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
- 	<!-- ==EXTERNAL_STORAGE== --> <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
- 	<!-- ==RECORD_AUDIO== --> <uses-permission android:name="android.permission.RECORD_AUDIO" />
- 
