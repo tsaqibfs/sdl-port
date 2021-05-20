@@ -139,6 +139,27 @@ on public HTTP server - you may specify URL in ChangeAppSettings.sh, also you ma
 If you'll release new version of data files you should change download URL or data file name and update your app as well -
 the app will re-download the data if URL does not match the saved URL from previous download.
 
+You can also create .obb file using jobb tool, and attach it to your app on Play Store:
+
+jobb -pn xyz.yourserver.yourapp -pv 123 -d ./data -o main.123.xyz.yourserver.yourapp.obb
+
+This .obb file contains fat32 filesystem, and it will be mounted during app start if you specify:
+
+AppDataDownloadUrl="!!Game data|mnt:main.123"
+
+where "main" is your .obb type (main or patch), "123" is the .obb version code,
+taken from AppVersionCode of the app to which the .obb file is initially attached,
+and xyz.yourserver.yourapp is your app package name taken from AppFullName.
+Note that you can update the app without updating the .obb file, so this version number will stay hardcoded.
+SDL will set an environment variable "ANDROID_OBB_MOUNT_DIR" when .obb file is mounted,
+so your game code can read it's data files from the path returned by getenv("ANDROID_OBB_MOUNT_DIR").
+It will return NULL if the user deletes .obb file, or your app is installed not from Play Store,
+so you may wish to specify a backup download location:
+
+AppDataDownloadUrl="!!Game data|mnt:main.123|https://yourserver.xyz/gamedata.zip"
+
+You also need to specify ReadObbFile=y inside AndroidAppSettings.cfg.
+
 All devices have different screen resolutions, you may toggle automatic screen resizing
 in ChangeAppSettings.sh and draw to virtual 640x480 screen - it will be HW accelerated
 and will not impact performance. Automatic screen resizing does not work in SDL 1.3/2.0.
