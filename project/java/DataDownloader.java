@@ -325,6 +325,7 @@ class DataDownloader extends Thread
 			Status.setText( downloadCount + "/" + downloadTotal + ": " + res.getString(R.string.connecting_to, url) );
 			if( url.indexOf("obb:") == 0 || url.indexOf("mnt:") == 0 ) // APK expansion file provided by Google Play
 			{
+				boolean tmpMountObb = ( url.indexOf("mnt:") == 0 );
 				url = getObbFilePath(url);
 				InputStream stream1 = null;
 
@@ -334,10 +335,9 @@ class DataDownloader extends Thread
 					stream1.close();
 					Log.i("SDL", "Fetching file from expansion: " + url);
 					FileInExpansion = true;
-					if( url.indexOf("mnt:") == 0 )
-						MountObb = true;
+					MountObb = tmpMountObb;
 					break;
-				} catch( Exception ee ) {
+				} catch( IOException ee ) {
 					Log.i("SDL", "Failed to open file, requesting storage read permission: " + url);
 
 					if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M)
@@ -352,6 +352,10 @@ class DataDownloader extends Thread
 							}
 						}
 					}
+				} catch( Exception eee ) {
+					Log.i("SDL", "Failed to open file: " + url);
+					downloadUrlIndex++;
+					continue;
 				}
 
 				try {
@@ -360,10 +364,9 @@ class DataDownloader extends Thread
 					stream1.close();
 					Log.i("SDL", "Fetching file from expansion: " + url);
 					FileInExpansion = true;
-					if( url.indexOf("mnt:") == 0 )
-						MountObb = true;
+					MountObb = tmpMountObb;
 					break;
-				} catch( Exception e ) {
+				} catch( Exception eee ) {
 					Log.i("SDL", "Failed to open file: " + url);
 					downloadUrlIndex++;
 					continue;
@@ -434,6 +437,7 @@ class DataDownloader extends Thread
 		
 		if( MountObb )
 		{
+			Log.i("SDL", "Mounting OBB file: " + url);
 			StorageManager sm = (StorageManager) Parent.getSystemService(Context.STORAGE_SERVICE);
 			if( !sm.mountObb(url, null, new OnObbStateChangeListener()
 					{
@@ -845,6 +849,7 @@ class DataDownloader extends Thread
 
 	private String getObbFilePath(final String url)
 	{
+		// "obb:" or "mnt:" - same length
 		return Environment.getExternalStorageDirectory().getAbsolutePath() + "/Android/obb/" +
 				Parent.getPackageName() + "/" + url.substring("obb:".length()) + "." + Parent.getPackageName() + ".obb";
 	}
