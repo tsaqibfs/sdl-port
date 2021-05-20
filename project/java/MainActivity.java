@@ -117,6 +117,8 @@ public class MainActivity extends Activity
 			getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
 					WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
+		DimSystemStatusBar.dim(null, getWindow());
+
 		Log.i("SDL", "libSDL: Creating startup screen");
 		_layout = new LinearLayout(this);
 		_layout.setOrientation(LinearLayout.VERTICAL);
@@ -182,6 +184,7 @@ public class MainActivity extends Activity
 		_videoLayout.setFocusable(true);
 		_videoLayout.setFocusableInTouchMode(true);
 		_videoLayout.requestFocus();
+		DimSystemStatusBar.dim(_videoLayout, getWindow());
 
 		class Callback implements Runnable
 		{
@@ -318,7 +321,7 @@ public class MainActivity extends Activity
 	{
 		setScreenOrientation();
 		updateScreenOrientation();
-		DimSystemStatusBar.get().dim(_videoLayout);
+		DimSystemStatusBar.dim(_videoLayout, getWindow());
 		(new Thread(new Runnable()
 		{
 			public void run()
@@ -337,7 +340,7 @@ public class MainActivity extends Activity
 						Log.i("SDL", "libSDL: Application paused, cancelling SDL initialization until it will be brought to foreground");
 						return;
 					}
-					DimSystemStatusBar.get().dim(_videoLayout);
+					DimSystemStatusBar.dim(_videoLayout, getWindow());
 				}
 				runOnUiThread(new Runnable()
 				{
@@ -351,7 +354,7 @@ public class MainActivity extends Activity
 						if( android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT && Globals.ImmersiveMode &&
 							(_videoLayout.getHeight() != dm.widthPixels || _videoLayout.getWidth() != dm.heightPixels) )
 						{
-							DimSystemStatusBar.get().dim(_videoLayout);
+							DimSystemStatusBar.dim(_videoLayout, getWindow());
 							try {
 								Thread.sleep(300);
 							} catch( Exception e ) {}
@@ -370,7 +373,7 @@ public class MainActivity extends Activity
 		Log.i("SDL", "libSDL: Initializing video and SDL application");
 		
 		sdlInited = true;
-		DimSystemStatusBar.get().dim(_videoLayout);
+		DimSystemStatusBar.dim(_videoLayout, getWindow());
 		_videoLayout.removeView(_layout);
 		if( _ad.getView() != null )
 			_videoLayout.removeView(_ad.getView());
@@ -465,8 +468,8 @@ public class MainActivity extends Activity
 			_videoLayout.addView(_ad.getView());
 			_ad.getView().setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.TOP | Gravity.RIGHT));
 		}
-		DimSystemStatusBar.get().dim(_videoLayout);
-		//DimSystemStatusBar.get().dim(mGLView);
+		DimSystemStatusBar.dim(_videoLayout, getWindow());
+		//DimSystemStatusBar.dim(mGLView, getWindow());
 
 		Rect r = new Rect();
 		_videoLayout.getWindowVisibleDisplayFrame(r);
@@ -477,14 +480,33 @@ public class MainActivity extends Activity
 			{
 				final Rect r = new Rect();
 				_videoLayout.getWindowVisibleDisplayFrame(r);
-				final int heightDiff = _videoLayout.getRootView().getHeight() - _videoLayout.getHeight(); // Take system bar into consideration
-				final int widthDiff = _videoLayout.getRootView().getWidth() - _videoLayout.getWidth(); // Nexus 5 has system bar at the right side
-				Log.v("SDL", "Main window visible region changed: " + r.left + ":" + r.top + ":" + r.width() + ":" + r.height() );
+				//boolean cutoutLeft = false, cutoutTop = false;
+				if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P && Globals.ImmersiveMode)
+				{
+					if (getWindow().getDecorView() != null && getWindow().getDecorView().getRootWindowInsets() != null &&
+						getWindow().getDecorView().getRootWindowInsets().getDisplayCutout() != null)
+					{
+						android.view.DisplayCutout cutout = getWindow().getDecorView().getRootWindowInsets().getDisplayCutout();
+						Log.v("SDL", "Detected display cutout");
+						// TODO: do something with it
+						//if (cutout.getBoundingRectLeft().width() > 0)
+						//	cutoutLeft = true;
+						//if (cutout.getBoundingRectTop().height() > 0)
+						//	cutoutTop = true;
+					}
+				}
+				final int heightDiff = 0; //_videoLayout.getRootView().getHeight() - _videoLayout.getHeight(); // Take system bar into consideration
+				final int widthDiff = 0; //_videoLayout.getRootView().getWidth() - _videoLayout.getWidth(); // Nexus 5 has system bar at the right side
+				Log.v("SDL", "Main window visible region changed: " + r.left + ":" + r.top + ":" + r.width() + ":" + r.height() + " -> " +
+						(r.left + widthDiff) + ":" + (r.top + heightDiff) + ":" + r.width() + ":" + r.height());
+				Log.v("SDL", "videoLayout: " + _videoLayout.getLeft() + ":" + _videoLayout.getTop() + ":" + _videoLayout.getWidth() + ":" + _videoLayout.getHeight() +
+						" videoLayout.getRootView() " + _videoLayout.getRootView().getLeft() + ":" + _videoLayout.getRootView().getTop() + ":" +
+						_videoLayout.getRootView().getWidth() + ":" + _videoLayout.getRootView().getHeight());
 				_videoLayout.postDelayed( new Runnable()
 				{
 					public void run()
 					{
-						DimSystemStatusBar.get().dim(_videoLayout);
+						DimSystemStatusBar.dim(_videoLayout, getWindow());
 						mGLView.nativeScreenVisibleRect(r.left + widthDiff, r.top + heightDiff, r.width(), r.height());
 					}
 				}, 300 );
@@ -492,7 +514,7 @@ public class MainActivity extends Activity
 				{
 					public void run()
 					{
-						DimSystemStatusBar.get().dim(_videoLayout);
+						DimSystemStatusBar.dim(_videoLayout, getWindow());
 						mGLView.nativeScreenVisibleRect(r.left + widthDiff, r.top + heightDiff, r.width(), r.height());
 					}
 				}, 600 );
@@ -522,8 +544,8 @@ public class MainActivity extends Activity
 		super.onResume();
 		if( mGLView != null )
 		{
-			DimSystemStatusBar.get().dim(_videoLayout);
-			//DimSystemStatusBar.get().dim(mGLView);
+			DimSystemStatusBar.dim(_videoLayout, getWindow());
+			//DimSystemStatusBar.dim(mGLView, getWindow());
 			mGLView.onResume();
 		}
 		else
@@ -800,8 +822,8 @@ public class MainActivity extends Activity
 					}
 					getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 					_inputManager.hideSoftInputFromWindow(mGLView.getWindowToken(), 0);
-					DimSystemStatusBar.get().dim(_videoLayout);
-					//DimSystemStatusBar.get().dim(mGLView);
+					DimSystemStatusBar.dim(_videoLayout, getWindow());
+					//DimSystemStatusBar.dim(mGLView, getWindow());
 					mGLView.captureMouse(true);
 				}
 			});
@@ -938,13 +960,13 @@ public class MainActivity extends Activity
 		_videoLayout.removeView(_screenKeyboard);
 		_screenKeyboard = null;
 		mGLView.captureMouse(true);
-		DimSystemStatusBar.get().dim(_videoLayout);
+		DimSystemStatusBar.dim(_videoLayout, getWindow());
 
 		_videoLayout.postDelayed( new Runnable()
 		{
 			public void run()
 			{
-				DimSystemStatusBar.get().dim(_videoLayout);
+				DimSystemStatusBar.dim(_videoLayout, getWindow());
 			}
 		}, 500 );
 	};
@@ -1473,40 +1495,37 @@ public class MainActivity extends Activity
 }
 
 // *** HONEYCOMB / ICS FIX FOR FULLSCREEN MODE, by lmak ***
-abstract class DimSystemStatusBar
+class DimSystemStatusBar
 {
-	public static DimSystemStatusBar get()
+	public static void dim(final View view, final Window window)
 	{
-		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB)
-			return DimSystemStatusBarHoneycomb.Holder.sInstance;
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT && Globals.ImmersiveMode)
+		{
+			// Immersive mode, I already hear curses when system bar reappears mid-game from the slightest swipe at the bottom of the screen
+			//Log.i("SDL", "libSDL: Enabling fullscreen, Android SDK " + android.os.Build.VERSION.SDK_INT + " VERSION_CODES.P " + android.os.Build.VERSION_CODES.P);
+			if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P && Globals.ImmersiveMode)
+			{
+				//Log.i("SDL", "libSDL: Setting display cutout mode to SHORT_EDGES");
+				window.getAttributes().layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+			}
+			//window.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+			//window.getDecorView().setSystemUiVisibility(android.view.View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY |
+			//											android.view.View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+			//											android.view.View.SYSTEM_UI_FLAG_FULLSCREEN);
+			if (view != null)
+			{
+				//view.setFitsSystemWindows(false);
+				view.setSystemUiVisibility(android.view.View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY |
+											android.view.View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+											android.view.View.SYSTEM_UI_FLAG_FULLSCREEN);
+			}
+		}
 		else
-			return DimSystemStatusBarDummy.Holder.sInstance;
-	}
-	public abstract void dim(final View view);
-
-	private static class DimSystemStatusBarHoneycomb extends DimSystemStatusBar
-	{
-		private static class Holder
 		{
-			private static final DimSystemStatusBarHoneycomb sInstance = new DimSystemStatusBarHoneycomb();
-		}
-		public void dim(final View view)
-		{
-			if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT && Globals.ImmersiveMode)
-				// Immersive mode, I already hear curses when system bar reappears mid-game from the slightest swipe at the bottom of the screen
-				view.setSystemUiVisibility(android.view.View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | android.view.View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | android.view.View.SYSTEM_UI_FLAG_FULLSCREEN);
-			else
+			if (view != null)
+			{
 				view.setSystemUiVisibility(android.view.View.SYSTEM_UI_FLAG_LOW_PROFILE);
-	   }
-	}
-	private static class DimSystemStatusBarDummy extends DimSystemStatusBar
-	{
-		private static class Holder
-		{
-			private static final DimSystemStatusBarDummy sInstance = new DimSystemStatusBarDummy();
-		}
-		public void dim(final View view)
-		{
+			}
 		}
 	}
 }

@@ -627,7 +627,7 @@ class SettingsMenuKeyboard extends SettingsMenu
 		{
 			p.setText(p.getResources().getString(R.string.screenkb_custom_layout_help));
 			if (Globals.ImmersiveMode)
-				DimSystemStatusBar.get().dim(p.getVideoLayout());
+				DimSystemStatusBar.dim(p.getVideoLayout(), p.getWindow());
 			p.getVideoLayout().getHandler().postDelayed(new Runnable()
 			{
 				public void run()

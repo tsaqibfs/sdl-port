@@ -1102,9 +1102,6 @@ class DemoGLSurfaceView extends GLSurfaceView_SDL {
 		if( nativeKey( keyCode, 0, event.getUnicodeChar(), DifferentTouchInput.processGamepadDeviceId(event.getDevice()) ) == 0 )
 			return super.onKeyUp(keyCode, event);
 
-		//if( keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_MENU )
-		//	DimSystemStatusBar.get().dim(mParent._videoLayout);
-
 		return true;
 	}
 
