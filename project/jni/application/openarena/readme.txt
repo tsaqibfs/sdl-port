@@ -10,3 +10,7 @@ install latest Android SDK, latest Android NDK, then launch commands:
     ./build.sh openarena
 
 That should do it.
+
+To view OpenArena logs, run command
+
+    adb logcat -s DEBUG SDL libSDL OpenArena
