@@ -1219,13 +1219,6 @@ public class GLSurfaceView_SDL extends SurfaceView implements SurfaceHolder.Call
 			synchronized (this) {
 				mWidth = w;
 				mHeight = h;
-				if (Globals.DrawInDisplayCutout) {
-					final Rect r = new Rect();
-					MainActivity.instance._videoLayout.getWindowVisibleDisplayFrame(r);
-					//mWidth = r.width();
-					//mHeight = r.height();
-					//Log.v("SDL", "GLSurfaceView_SDL::onWindowResize(): adjusted to display cutout: " + mWidth + "x" + mHeight);
-				}
 				mSizeChanged = true;
 				mRenderer.onWindowResize(w, h);
 				notify();

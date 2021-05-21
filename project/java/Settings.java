@@ -87,6 +87,7 @@ public class Settings
 	static boolean settingsChanged = false;
 	static final int SETTINGS_FILE_VERSION = 5;
 	static boolean convertButtonSizeFromOldSdlVersion = false;
+	static int settingsAppVersion = 0;
 
 	static void Save(final MainActivity p)
 	{
@@ -191,6 +192,7 @@ public class Settings
 			out.writeBoolean(Globals.ForceHardwareMouse);
 			convertButtonSizeFromOldSdlVersion = false;
 			out.writeBoolean(convertButtonSizeFromOldSdlVersion);
+			out.writeBoolean(Globals.DrawInDisplayCutout);
 
 			out.close();
 			settingsLoaded = true;
@@ -200,82 +202,8 @@ public class Settings
 		} catch ( IOException e ) {};
 	}
 
-	static void Load( final MainActivity p )
+	static boolean LoadConfig( final MainActivity p )
 	{
-		if(settingsLoaded) // Prevent starting twice
-		{
-			return;
-		}
-		Log.i("SDL", "libSDL: Settings.Load(): enter");
-		nativeInitKeymap();
-		for( int i = 0; i < SDL_Keys.JAVA_KEYCODE_LAST; i++ )
-		{
-			int sdlKey = nativeGetKeymapKey(i);
-			int idx = 0;
-			for(int ii = 0; ii < SDL_Keys.values.length; ii++)
-				if(SDL_Keys.values[ii] == sdlKey)
-					idx = ii;
-			Globals.RemapHwKeycode[i] = idx;
-		}
-		for( int i = 0; i < Globals.RemapScreenKbKeycode.length; i++ )
-		{
-			int sdlKey = nativeGetKeymapKeyScreenKb(i);
-			int idx = 0;
-			for(int ii = 0; ii < SDL_Keys.values.length; ii++)
-				if(SDL_Keys.values[ii] == sdlKey)
-					idx = ii;
-			Globals.RemapScreenKbKeycode[i] = idx;
-		}
-		Globals.ScreenKbControlsShown[0] = (Globals.AppNeedsArrowKeys || Globals.AppUsesJoystick);
-		Globals.ScreenKbControlsShown[1] = Globals.AppNeedsTextInput;
-		for( int i = 2; i < Globals.ScreenKbControlsShown.length; i++ )
-			Globals.ScreenKbControlsShown[i] = ( i - 2 < Globals.AppTouchscreenKeyboardKeysAmount );
-		if( Globals.AppUsesSecondJoystick )
-			Globals.ScreenKbControlsShown[8] = true;
-		if( Globals.AppUsesThirdJoystick )
-			Globals.ScreenKbControlsShown[9] = true;
-		for( int i = 0; i < Globals.RemapMultitouchGestureKeycode.length; i++ )
-		{
-			int sdlKey = nativeGetKeymapKeyMultitouchGesture(i);
-			int idx = 0;
-			for(int ii = 0; ii < SDL_Keys.values.length; ii++)
-				if(SDL_Keys.values[ii] == sdlKey)
-					idx = ii;
-			Globals.RemapMultitouchGestureKeycode[i] = idx;
-		}
-		for( int i = 0; i < Globals.MultitouchGesturesUsed.length; i++ )
-			Globals.MultitouchGesturesUsed[i] = true;
-		// Adjust coordinates of on-screen buttons from 800x480
-		int displayX = 800;
-		int displayY = 480;
-		try {
-			DisplayMetrics dm = new DisplayMetrics();
-			p.getWindowManager().getDefaultDisplay().getMetrics(dm);
-			displayX = dm.widthPixels;
-			displayY = dm.heightPixels;
-		} catch (Exception eeeee) {}
-		for( int i = 0; i < Globals.ScreenKbControlsLayout.length; i++ )
-		{
-			Globals.ScreenKbControlsLayout[i][0] *= (float)displayX / 800.0f;
-			Globals.ScreenKbControlsLayout[i][2] *= (float)displayX / 800.0f;
-			Globals.ScreenKbControlsLayout[i][1] *= (float)displayY / 480.0f;
-			Globals.ScreenKbControlsLayout[i][3] *= (float)displayY / 480.0f;
-			// Make them square
-			int wh = Math.min( Globals.ScreenKbControlsLayout[i][2] - Globals.ScreenKbControlsLayout[i][0], Globals.ScreenKbControlsLayout[i][3] - Globals.ScreenKbControlsLayout[i][1] );
-			Globals.ScreenKbControlsLayout[i][2] = Globals.ScreenKbControlsLayout[i][0] + wh;
-			Globals.ScreenKbControlsLayout[i][3] = Globals.ScreenKbControlsLayout[i][1] + wh;
-		}
-
-		Log.i("SDL", "android.os.Build.MODEL: " + android.os.Build.MODEL);
-		if( (android.os.Build.MODEL.equals("GT-N7000") || android.os.Build.MODEL.equals("SGH-I717"))
-			&& android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.GINGERBREAD_MR1 )
-		{
-			// Samsung Galaxy Note generates a keypress when you hover a stylus over the screen, and that messes up OpenTTD dialogs
-			// ICS update sends events in a proper way
-			Globals.RemapHwKeycode[112] = SDL_1_2_Keycodes.SDLK_UNKNOWN;
-		}
-		convertButtonSizeFromOldSdlVersion = false;
-
 		try {
 			ObjectInputStream settingsFile = new ObjectInputStream(new FileInputStream( p.getFilesDir().getAbsolutePath() + "/" + SettingsFileName ));
 			if( settingsFile.readInt() != SETTINGS_FILE_VERSION )
@@ -362,7 +290,7 @@ public class Settings
 				Globals.OptionalDataDownload[i] = settingsFile.readBoolean();
 			settingsFile.readBoolean(); // Unused
 			Globals.TouchscreenKeyboardDrawSize = settingsFile.readInt();
-			int cfgVersion = settingsFile.readInt();
+			settingsAppVersion = settingsFile.readInt();
 			// Gyroscope calibration data, now unused
 			settingsFile.readFloat();
 			settingsFile.readFloat();
@@ -388,19 +316,112 @@ public class Settings
 			Globals.TvBorders = settingsFile.readBoolean();
 			Globals.ForceHardwareMouse = settingsFile.readBoolean();
 			convertButtonSizeFromOldSdlVersion = settingsFile.readBoolean();
+			Globals.DrawInDisplayCutout = settingsFile.readBoolean();
 
-			settingsLoaded = true;
-
-			Log.i("SDL", "libSDL: Settings.Load(): loaded settings successfully");
+			Log.i("SDL", "libSDL: Settings.LoadConfig(): loaded settings successfully");
 			settingsFile.close();
 
-			Log.i("SDL", "libSDL: old cfg version " + cfgVersion + ", our version " + p.getApplicationVersion());
-			if( cfgVersion != p.getApplicationVersion() )
+			return true;
+
+		} catch( FileNotFoundException e ) {
+			Log.i("SDL", "libSDL: settings file not found: " + e);
+		} catch( SecurityException e ) {
+			Log.i("SDL", "libSDL: settings file cannot be opened: " + e);
+		} catch( IOException e ) {
+			Log.i("SDL", "libSDL: settings file cannot be read: " + e);
+		}
+
+		return false;
+	}
+
+	static void ProcessConfig( final MainActivity p )
+	{
+		if( settingsLoaded ) // Prevent starting twice
+		{
+			return;
+		}
+		Log.i("SDL", "libSDL: Settings.ProcessConfig(): enter");
+		nativeInitKeymap();
+		for( int i = 0; i < SDL_Keys.JAVA_KEYCODE_LAST; i++ )
+		{
+			int sdlKey = nativeGetKeymapKey(i);
+			int idx = 0;
+			for(int ii = 0; ii < SDL_Keys.values.length; ii++)
+				if(SDL_Keys.values[ii] == sdlKey)
+					idx = ii;
+			Globals.RemapHwKeycode[i] = idx;
+		}
+		for( int i = 0; i < Globals.RemapScreenKbKeycode.length; i++ )
+		{
+			int sdlKey = nativeGetKeymapKeyScreenKb(i);
+			int idx = 0;
+			for(int ii = 0; ii < SDL_Keys.values.length; ii++)
+				if(SDL_Keys.values[ii] == sdlKey)
+					idx = ii;
+			Globals.RemapScreenKbKeycode[i] = idx;
+		}
+		Globals.ScreenKbControlsShown[0] = (Globals.AppNeedsArrowKeys || Globals.AppUsesJoystick);
+		Globals.ScreenKbControlsShown[1] = Globals.AppNeedsTextInput;
+		for( int i = 2; i < Globals.ScreenKbControlsShown.length; i++ )
+			Globals.ScreenKbControlsShown[i] = ( i - 2 < Globals.AppTouchscreenKeyboardKeysAmount );
+		if( Globals.AppUsesSecondJoystick )
+			Globals.ScreenKbControlsShown[8] = true;
+		if( Globals.AppUsesThirdJoystick )
+			Globals.ScreenKbControlsShown[9] = true;
+		for( int i = 0; i < Globals.RemapMultitouchGestureKeycode.length; i++ )
+		{
+			int sdlKey = nativeGetKeymapKeyMultitouchGesture(i);
+			int idx = 0;
+			for(int ii = 0; ii < SDL_Keys.values.length; ii++)
+				if(SDL_Keys.values[ii] == sdlKey)
+					idx = ii;
+			Globals.RemapMultitouchGestureKeycode[i] = idx;
+		}
+		for( int i = 0; i < Globals.MultitouchGesturesUsed.length; i++ )
+			Globals.MultitouchGesturesUsed[i] = true;
+		// Adjust coordinates of on-screen buttons from 800x480
+		int displayX = 800;
+		int displayY = 480;
+		try {
+			DisplayMetrics dm = new DisplayMetrics();
+			p.getWindowManager().getDefaultDisplay().getMetrics(dm);
+			displayX = dm.widthPixels;
+			displayY = dm.heightPixels;
+		} catch (Exception eeeee) {}
+		for( int i = 0; i < Globals.ScreenKbControlsLayout.length; i++ )
+		{
+			Globals.ScreenKbControlsLayout[i][0] *= (float)displayX / 800.0f;
+			Globals.ScreenKbControlsLayout[i][2] *= (float)displayX / 800.0f;
+			Globals.ScreenKbControlsLayout[i][1] *= (float)displayY / 480.0f;
+			Globals.ScreenKbControlsLayout[i][3] *= (float)displayY / 480.0f;
+			// Make them square
+			int wh = Math.min( Globals.ScreenKbControlsLayout[i][2] - Globals.ScreenKbControlsLayout[i][0], Globals.ScreenKbControlsLayout[i][3] - Globals.ScreenKbControlsLayout[i][1] );
+			Globals.ScreenKbControlsLayout[i][2] = Globals.ScreenKbControlsLayout[i][0] + wh;
+			Globals.ScreenKbControlsLayout[i][3] = Globals.ScreenKbControlsLayout[i][1] + wh;
+		}
+
+		Log.i("SDL", "android.os.Build.MODEL: " + android.os.Build.MODEL);
+		if( (android.os.Build.MODEL.equals("GT-N7000") || android.os.Build.MODEL.equals("SGH-I717"))
+			&& android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.GINGERBREAD_MR1 )
+		{
+			// Samsung Galaxy Note generates a keypress when you hover a stylus over the screen, and that messes up OpenTTD dialogs
+			// ICS update sends events in a proper way
+			Globals.RemapHwKeycode[112] = SDL_1_2_Keycodes.SDLK_UNKNOWN;
+		}
+		convertButtonSizeFromOldSdlVersion = false;
+
+		settingsLoaded = LoadConfig(p);
+
+		if (settingsLoaded)
+		{
+			Log.i("SDL", "libSDL: Settings.ProcessConfig(): loaded settings successfully");
+			Log.i("SDL", "libSDL: old app version " + settingsAppVersion + ", new app version " + p.getApplicationVersion());
+			if( settingsAppVersion != p.getApplicationVersion() )
 			{
 				DeleteFilesOnUpgrade(p);
 				if( Globals.ResetSdlConfigForThisVersion )
 				{
-					Log.i("SDL", "libSDL: old cfg version " + cfgVersion + ", our version " + p.getApplicationVersion() + " and we need to clean up config file");
+					Log.i("SDL", "libSDL: old app version " + settingsAppVersion + ", new app version " + p.getApplicationVersion() + " and we need to clean up config file");
 					// Delete settings file, and restart the application
 					DeleteSdlConfigOnUpgradeAndRestart(p);
 				}
@@ -408,26 +429,21 @@ public class Settings
 			}
 
 			return;
-			
-		} catch( FileNotFoundException e ) {
-			Log.i("SDL", "libSDL: settings file not found: " + e);
-		} catch( SecurityException e ) {
-			Log.i("SDL", "libSDL: settings file cannot be opened: " + e);
-		} catch( IOException e ) {
-			Log.i("SDL", "libSDL: settings file cannot be read: " + e);
-			DeleteFilesOnUpgrade(p);
-			if (convertButtonSizeFromOldSdlVersion && Globals.TouchscreenKeyboardSize + 1 < Globals.TOUCHSCREEN_KEYBOARD_CUSTOM)
-			{
-				Globals.TouchscreenKeyboardSize ++; // New default button size is bigger, but we are keeping old button size for existing installations
-				//if (Globals.AppTouchscreenKeyboardKeysAmount <= 4 && Globals.TouchscreenKeyboardSize + 1 < Globals.TOUCHSCREEN_KEYBOARD_CUSTOM)
-				//	Globals.TouchscreenKeyboardSize ++; // If there are only 4 buttons they are even bigger
-			}
-			if( Globals.ResetSdlConfigForThisVersion )
-			{
-				Log.i("SDL", "libSDL: old cfg version unknown or too old, our version " + p.getApplicationVersion() + " and we need to clean up config file");
-				DeleteSdlConfigOnUpgradeAndRestart(p);
-			}
-		};
+		}
+
+		Log.i("SDL", "libSDL: settings cannot be loaded");
+		DeleteFilesOnUpgrade(p);
+		if (convertButtonSizeFromOldSdlVersion && Globals.TouchscreenKeyboardSize + 1 < Globals.TOUCHSCREEN_KEYBOARD_CUSTOM)
+		{
+			Globals.TouchscreenKeyboardSize ++; // New default button size is bigger, but we are keeping old button size for existing installations
+			//if (Globals.AppTouchscreenKeyboardKeysAmount <= 4 && Globals.TouchscreenKeyboardSize + 1 < Globals.TOUCHSCREEN_KEYBOARD_CUSTOM)
+			//	Globals.TouchscreenKeyboardSize ++; // If there are only 4 buttons they are even bigger
+		}
+		if( Globals.ResetSdlConfigForThisVersion && settingsAppVersion != 0 )
+		{
+			Log.i("SDL", "libSDL: old cfg version unknown or too old, our version " + p.getApplicationVersion() + " and we need to clean up config file");
+			DeleteSdlConfigOnUpgradeAndRestart(p);
+		}
 		
 		if( Globals.DataDir.length() == 0 )
 		{

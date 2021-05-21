@@ -117,6 +117,8 @@ public class MainActivity extends Activity
 			getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
 					WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
+		// We need to load Globals.DrawInDisplayCutout option to correctly set fullscreen mode, it can only be done from onCreate()
+		Settings.LoadConfig(this);
 		DimSystemStatusBar.dim(null, getWindow());
 
 		Log.i("SDL", "libSDL: Creating startup screen");
@@ -208,8 +210,9 @@ public class MainActivity extends Activity
 						public MainActivity Parent;
 						public void run()
 						{
-							Settings.Load(Parent);
+							Settings.ProcessConfig(Parent);
 							setScreenOrientation();
+							DimSystemStatusBar.dim(_videoLayout, getWindow());
 							loaded.release();
 							loadedLibraries.release();
 							if( _btn != null )
@@ -1503,21 +1506,22 @@ class DimSystemStatusBar
 		{
 			// Immersive mode, I already hear curses when system bar reappears mid-game from the slightest swipe at the bottom of the screen
 			//Log.i("SDL", "libSDL: Enabling fullscreen, Android SDK " + android.os.Build.VERSION.SDK_INT + " VERSION_CODES.P " + android.os.Build.VERSION_CODES.P);
-			if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P && Globals.ImmersiveMode)
+			if( android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P )
 			{
 				//Log.i("SDL", "libSDL: Setting display cutout mode to SHORT_EDGES");
-				window.getAttributes().layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+				if (Globals.DrawInDisplayCutout)
+					window.getAttributes().layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+				else
+					window.getAttributes().layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER;
 			}
-			//window.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-			//window.getDecorView().setSystemUiVisibility(android.view.View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY |
-			//											android.view.View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
-			//											android.view.View.SYSTEM_UI_FLAG_FULLSCREEN);
 			if (view != null)
 			{
-				//view.setFitsSystemWindows(false);
-				view.setSystemUiVisibility(android.view.View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY |
-											android.view.View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
-											android.view.View.SYSTEM_UI_FLAG_FULLSCREEN);
+				view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
+											| View.SYSTEM_UI_FLAG_FULLSCREEN
+											| View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+											| View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+											| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+											| View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
 			}
 		}
 		else

@@ -324,6 +324,9 @@ echo >> AndroidAppSettings.cfg
 echo "# Immersive mode - Android will hide on-screen Home/Back keys. Looks bad if you invoke Android keyboard. (y) / (n)" >> AndroidAppSettings.cfg
 echo ImmersiveMode=$ImmersiveMode >> AndroidAppSettings.cfg
 echo >> AndroidAppSettings.cfg
+echo "# Draw in the display cutout area. (y) / (n)" >> AndroidAppSettings.cfg
+echo DrawInDisplayCutout=$DrawInDisplayCutout >> AndroidAppSettings.cfg
+echo >> AndroidAppSettings.cfg
 echo "# Hide Android system mouse cursor image when USB mouse is attached (y) or (n) - the app must draw it's own mouse cursor" >> AndroidAppSettings.cfg
 echo HideSystemMousePointer=$HideSystemMousePointer >> AndroidAppSettings.cfg
 echo >> AndroidAppSettings.cfg
@@ -894,6 +897,12 @@ else
 	ImmersiveMode=true
 fi
 
+if [ "$DrawInDisplayCutout" = "y" ]; then
+	DrawInDisplayCutout=true
+else
+	DrawInDisplayCutout=false
+fi
+
 if [ "$HideSystemMousePointer" = "n" ]; then
 	HideSystemMousePointer=false
 else
@@ -977,6 +986,7 @@ $SEDI "s/public static boolean AppUsesMultitouch = .*;/public static boolean App
 $SEDI "s/public static boolean NonBlockingSwapBuffers = .*;/public static boolean NonBlockingSwapBuffers = $NonBlockingSwapBuffers;/" project/src/Globals.java
 $SEDI "s/public static boolean ResetSdlConfigForThisVersion = .*;/public static boolean ResetSdlConfigForThisVersion = $ResetSdlConfigForThisVersion;/" project/src/Globals.java
 $SEDI "s/public static boolean ImmersiveMode = .*;/public static boolean ImmersiveMode = $ImmersiveMode;/" project/src/Globals.java
+$SEDI "s/public static boolean DrawInDisplayCutout = .*;/public static boolean DrawInDisplayCutout = $DrawInDisplayCutout;/" project/src/Globals.java
 $SEDI "s/public static boolean HideSystemMousePointer = .*;/public static boolean HideSystemMousePointer = $HideSystemMousePointer;/" project/src/Globals.java
 $SEDI "s|public static String DeleteFilesOnUpgrade = .*;|public static String DeleteFilesOnUpgrade = \"$DeleteFilesOnUpgrade\";|" project/src/Globals.java
 $SEDI "s/public static int AppTouchscreenKeyboardKeysAmount = .*;/public static int AppTouchscreenKeyboardKeysAmount = $AppTouchscreenKeyboardKeysAmount;/" project/src/Globals.java

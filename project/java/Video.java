@@ -703,14 +703,6 @@ class DemoRenderer extends GLSurfaceView_SDL.Renderer
 					hh = topView.getHeight() - topView.getHeight() % 2;
 				}
 
-				if (Globals.DrawInDisplayCutout) {
-					final Rect r = new Rect();
-					context._videoLayout.getWindowVisibleDisplayFrame(r);
-					//ww = r.width();
-					//hh = r.height();
-					//Log.v("SDL", "DemoRenderer.onWindowResize(): adjusted to display cutout");
-				}
-
 				Display display = context.getWindowManager().getDefaultDisplay();
 
 				if (mWidth != 0 && mHeight != 0 && (mWidth != ww || mHeight != hh))
