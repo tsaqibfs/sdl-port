@@ -66,6 +66,7 @@ import android.net.Uri;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.hardware.input.InputManager;
+import android.graphics.Rect;
 
 
 class Mouse
@@ -700,6 +701,14 @@ class DemoRenderer extends GLSurfaceView_SDL.Renderer
 				{
 					ww = topView.getWidth() - topView.getWidth() % 2;
 					hh = topView.getHeight() - topView.getHeight() % 2;
+				}
+
+				if (Globals.DrawInDisplayCutout) {
+					final Rect r = new Rect();
+					context._videoLayout.getWindowVisibleDisplayFrame(r);
+					//ww = r.width();
+					//hh = r.height();
+					//Log.v("SDL", "DemoRenderer.onWindowResize(): adjusted to display cutout");
 				}
 
 				Display display = context.getWindowManager().getDefaultDisplay();

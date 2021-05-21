@@ -20,6 +20,7 @@
 				  android:launchMode="singleTask"
 				  android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize|layoutDirection"
 				  android:windowSoftInputMode="stateUnspecified"
+				  android:theme="@style/AppTheme"
 		>
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
