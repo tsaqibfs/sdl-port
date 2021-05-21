@@ -482,7 +482,13 @@ public class MainActivity extends Activity
 			public void onGlobalLayout()
 			{
 				final Rect r = new Rect();
-				_videoLayout.getWindowVisibleDisplayFrame(r);
+				//_videoLayout.getWindowVisibleDisplayFrame(r);
+				final int xy[] = new int[] { 0, 0 };
+				_videoLayout.getLocationInWindow(xy);
+				r.left = xy[0];
+				r.top = xy[1];
+				r.right = r.left + _videoLayout.getWidth();
+				r.bottom = r.top + _videoLayout.getHeight();
 				//boolean cutoutLeft = false, cutoutTop = false;
 				if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P && Globals.ImmersiveMode)
 				{
@@ -498,8 +504,8 @@ public class MainActivity extends Activity
 						//	cutoutTop = true;
 					}
 				}
-				final int heightDiff = 0; //_videoLayout.getRootView().getHeight() - _videoLayout.getHeight(); // Take system bar into consideration
-				final int widthDiff = 0; //_videoLayout.getRootView().getWidth() - _videoLayout.getWidth(); // Nexus 5 has system bar at the right side
+				final int heightDiff = _videoLayout.getRootView().getHeight() - _videoLayout.getHeight(); // Take system bar into consideration
+				final int widthDiff = _videoLayout.getRootView().getWidth() - _videoLayout.getWidth(); // Nexus 5 has system bar at the right side
 				Log.v("SDL", "Main window visible region changed: " + r.left + ":" + r.top + ":" + r.width() + ":" + r.height() + " -> " +
 						(r.left + widthDiff) + ":" + (r.top + heightDiff) + ":" + r.width() + ":" + r.height());
 				Log.v("SDL", "videoLayout: " + _videoLayout.getLeft() + ":" + _videoLayout.getTop() + ":" + _videoLayout.getWidth() + ":" + _videoLayout.getHeight() +
