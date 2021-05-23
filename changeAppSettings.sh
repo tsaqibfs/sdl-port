@@ -150,7 +150,9 @@ echo "# If you'll start Description with '!' symbol it will be enabled by defaul
 echo "# If the URL in in the form ':dir/file.dat:http://URL/' it will be downloaded as binary BLOB to the application dir and not unzipped" >> AndroidAppSettings.cfg
 echo "# If the URL does not contain 'http://' or 'https://', it is treated as file from 'project/jni/application/src/AndroidData' dir -" >> AndroidAppSettings.cfg
 echo "# these files are put inside .apk package by the build system" >> AndroidAppSettings.cfg
-echo "# You can specify Google Play expansion files in the form 'obb:main.12345' or 'obb:patch.12345' where 12345 is the app version for obb file" >> AndroidAppSettings.cfg
+echo "# You can specify Google Play expansion files in the form 'obb:main.12345' or 'obb:patch.12345' where 12345 is the app version for the obb file" >> AndroidAppSettings.cfg
+echo "# You can mount expansion files created with jobb tool if you put 'mnt:main.12345' or 'mnt:patch.12345'" >> AndroidAppSettings.cfg
+echo "# The mount directory will be returned by calling getenv(\"ANDROID_OBB_MOUNT_DIR\")" >> AndroidAppSettings.cfg
 echo "# You can use .zip.xz archives for better compression, but you need to add 'lzma' to CompiledLibraries" >> AndroidAppSettings.cfg
 echo "# Generate .zip.xz files like this: zip -0 -r data.zip your-data/* ; xz -8 data.zip" >> AndroidAppSettings.cfg
 echo AppDataDownloadUrl=\"$AppDataDownloadUrl\" >> AndroidAppSettings.cfg
@@ -343,10 +345,11 @@ echo "# Use word NO_REMAP if you want to preserve native functionality for certa
 echo "# Keys: TOUCHSCREEN (works only when AppUsesMouse=n), DPAD_CENTER/SEARCH, VOLUMEUP, VOLUMEDOWN, MENU, BACK, CAMERA" >> AndroidAppSettings.cfg
 echo RedefinedKeys=\"$RedefinedKeys\" >> AndroidAppSettings.cfg
 echo >> AndroidAppSettings.cfg
-echo "# Number of virtual keyboard keys (currently 6 is maximum)" >> AndroidAppSettings.cfg
+echo "# Number of virtual keyboard keys - currently 12 keys is the maximum" >> AndroidAppSettings.cfg
 echo AppTouchscreenKeyboardKeysAmount=$AppTouchscreenKeyboardKeysAmount >> AndroidAppSettings.cfg
 echo >> AndroidAppSettings.cfg
-echo "# Redefine on-screen keyboard keys to SDL keysyms - 6 keyboard keys + 4 multitouch gestures (zoom in/out and rotate left/right)" >> AndroidAppSettings.cfg
+echo "# Redefine on-screen keyboard keys to SDL keysyms - 6 keyboard keys + 4 multitouch gestures (zoom in/out and rotate left/right) + 6 additional keyboard keys" >> AndroidAppSettings.cfg
+echo "# Multitouch gestures should be moved to a separate variable, but are left here for compatibility" >> AndroidAppSettings.cfg
 echo RedefinedKeysScreenKb=\"$RedefinedKeysScreenKb\" >> AndroidAppSettings.cfg
 echo >> AndroidAppSettings.cfg
 echo "# Names for on-screen keyboard keys, such as Fire, Jump, Run etc, separated by spaces, they are used in SDL config menu" >> AndroidAppSettings.cfg

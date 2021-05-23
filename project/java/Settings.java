@@ -230,20 +230,22 @@ public class Settings
 			Globals.KeepAspectRatio = settingsFile.readBoolean();
 			Globals.MoveMouseWithJoystickSpeed = settingsFile.readInt();
 			Globals.MoveMouseWithJoystickAccel = settingsFile.readInt();
-			int readKeys = settingsFile.readInt();
-			for( int i = 0; i < readKeys; i++ )
+			int readKeysSize = settingsFile.readInt();
+			for( int i = 0; i < readKeysSize; i++ )
 			{
 				Globals.RemapHwKeycode[i] = settingsFile.readInt();
 			}
-			if( settingsFile.readInt() != Globals.RemapScreenKbKeycode.length )
+			int readScreenKbRemapKeysSize = settingsFile.readInt();
+			if( readScreenKbRemapKeysSize > Globals.RemapScreenKbKeycode.length )
 				throw new IOException();
-			for( int i = 0; i < Globals.RemapScreenKbKeycode.length; i++ )
+			for( int i = 0; i < readScreenKbRemapKeysSize; i++ )
 			{
 				Globals.RemapScreenKbKeycode[i] = settingsFile.readInt();
 			}
-			if( settingsFile.readInt() != Globals.ScreenKbControlsShown.length )
+			int readScreenKbShownSize = settingsFile.readInt();
+			if( readScreenKbShownSize > Globals.ScreenKbControlsShown.length )
 				throw new IOException();
-			for( int i = 0; i < Globals.ScreenKbControlsShown.length; i++ )
+			for( int i = 0; i < readScreenKbShownSize; i++ )
 			{
 				Globals.ScreenKbControlsShown[i] = settingsFile.readBoolean();
 			}
@@ -270,9 +272,10 @@ public class Settings
 				b.append( settingsFile.readChar() );
 			Globals.CommandLine = b.toString();
 
-			if( settingsFile.readInt() != Globals.ScreenKbControlsLayout.length )
+			int screenKbControlsLayoutSize = settingsFile.readInt();
+			if( screenKbControlsLayoutSize > Globals.ScreenKbControlsLayout.length )
 				throw new IOException();
-			for( int i = 0; i < Globals.ScreenKbControlsLayout.length; i++ )
+			for( int i = 0; i < screenKbControlsLayoutSize; i++ )
 				for( int ii = 0; ii < 4; ii++ )
 					Globals.ScreenKbControlsLayout[i][ii] = settingsFile.readInt();
 			Globals.LeftClickKey = settingsFile.readInt();
@@ -362,12 +365,14 @@ public class Settings
 		}
 		Globals.ScreenKbControlsShown[0] = (Globals.AppNeedsArrowKeys || Globals.AppUsesJoystick);
 		Globals.ScreenKbControlsShown[1] = Globals.AppNeedsTextInput;
-		for( int i = 2; i < Globals.ScreenKbControlsShown.length; i++ )
+		for( int i = 2; i < 8; i++ )
 			Globals.ScreenKbControlsShown[i] = ( i - 2 < Globals.AppTouchscreenKeyboardKeysAmount );
 		if( Globals.AppUsesSecondJoystick )
 			Globals.ScreenKbControlsShown[8] = true;
 		if( Globals.AppUsesThirdJoystick )
 			Globals.ScreenKbControlsShown[9] = true;
+		for( int i = 10; i < Globals.ScreenKbControlsShown.length; i++ )
+			Globals.ScreenKbControlsShown[i] = ( i - 4 < Globals.AppTouchscreenKeyboardKeysAmount );
 		for( int i = 0; i < Globals.RemapMultitouchGestureKeycode.length; i++ )
 		{
 			int sdlKey = nativeGetKeymapKeyMultitouchGesture(i);
