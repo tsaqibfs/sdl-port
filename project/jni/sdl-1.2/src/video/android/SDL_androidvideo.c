@@ -281,7 +281,9 @@ void SDL_ANDROID_CallJavaShowScreenKeyboard(const char * oldText, char * outBuf,
 	SDL_ANDROID_MainThreadPushMouseButton( SDL_RELEASED, SDL_BUTTON_LEFT );
 	SDL_ANDROID_MainThreadPushMouseButton( SDL_RELEASED, SDL_BUTTON_RIGHT );
 	SDL_ANDROID_MainThreadPushMouseButton( SDL_RELEASED, SDL_BUTTON_MIDDLE );
-	for (i = 0; i < MAX_MULTITOUCH_POINTERS; i++)
+	//__android_log_print(ANDROID_LOG_INFO, "libSDL", "Releasing all touch pointers: mouse at %4d %4d", SDL_ANDROID_currentMouseX, SDL_ANDROID_currentMouseY);
+	JAVA_EXPORT_NAME(DemoGLSurfaceView_nativeMotionEvent) ( NULL, NULL, SDL_ANDROID_currentMouseX, SDL_ANDROID_currentMouseY, MOUSE_UP, 0, 0, 0 );
+	for (i = 1; i < MAX_MULTITOUCH_POINTERS; i++)
 	{
 		JAVA_EXPORT_NAME(DemoGLSurfaceView_nativeMotionEvent) ( NULL, NULL, 0, 0, MOUSE_UP, i, 0, 0 );
 	}

@@ -464,6 +464,12 @@ static void SendMultitouchEvents( int x, int y, int action, int pointerId, int f
 		SDL_ANDROID_MainThreadPushJoystickBall(JOY_TOUCHSCREEN, pointerId, x, y);
 		if( action == MOUSE_UP )
 			SDL_ANDROID_MainThreadPushJoystickButton(JOY_TOUCHSCREEN, pointerId, SDL_RELEASED);
+		if( !SDL_ANDROID_isMouseUsed && pointerId == 0 )
+		{
+			// Set mouse coordinates to track the first touch pointer, they are used elsewhere but not updated when mouse events are disabled
+			SDL_ANDROID_currentMouseX = x;
+			SDL_ANDROID_currentMouseY = y;
+		}
 	}
 
 	if( !isMultitouchUsed && !SDL_ANDROID_isMouseUsed && !SDL_ANDROID_isTouchscreenKeyboardUsed )
