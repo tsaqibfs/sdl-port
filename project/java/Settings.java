@@ -1008,7 +1008,7 @@ public class Settings
 													int HoverJitterFilter, int RightMouseButtonLongPress,
 													int MoveMouseWithGyroscope, int MoveMouseWithGyroscopeSpeed,
 													int ForceScreenUpdateMouseClick, int ScreenFollowsMouse);
-	private static native void nativeSetJoystickUsed(int amount);
+	public static native void nativeSetJoystickUsed(int amount);
 	private static native void nativeSetAccelerometerUsed();
 	private static native void nativeSetMultitouchUsed();
 	private static native void nativeSetTouchscreenKeyboardUsed();

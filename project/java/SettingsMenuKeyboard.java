@@ -457,7 +457,12 @@ class SettingsMenuKeyboard extends SettingsMenu
 				goBack(p);
 				return;
 			}
-			if( ! Globals.ScreenKbControlsShown[currentButton + 2] )
+			if( currentButton < 6 && ! Globals.ScreenKbControlsShown[currentButton + 2] )
+			{
+				showRemapScreenKbConfig2(p, currentButton + 1);
+				return;
+			}
+			if( currentButton >= 6 && ! Globals.ScreenKbControlsShown[currentButton + 4] )
 			{
 				showRemapScreenKbConfig2(p, currentButton + 1);
 				return;
@@ -669,9 +674,15 @@ class SettingsMenuKeyboard extends SettingsMenu
 			};
 			int oldX = 0, oldY = 0;
 			boolean resizing = false;
-			
+
 			public CustomizeScreenKbLayoutTool(MainActivity _p) 
 			{
+				if( buttons.length != Globals.ScreenKbControlsLayout.length )
+				{
+					Log.i("SDL", "Assertion failed: buttons.length != Globals.ScreenKbControlsLayout.length" );
+					throw new RuntimeException("Assertion failed: buttons.length != Globals.ScreenKbControlsLayout.length");
+				}
+
 				p = _p;
 				layout = new FrameLayout(p);
 				p.getVideoLayout().addView(layout);
@@ -694,6 +705,7 @@ class SettingsMenuKeyboard extends SettingsMenu
 				if( Globals.TouchscreenKeyboardSize != Globals.TOUCHSCREEN_KEYBOARD_CUSTOM )
 				{
 					DemoRenderer.nativeResize(displayX, displayY, 0);
+					Settings.nativeSetJoystickUsed( Globals.AppUsesThirdJoystick ? 3 : (Globals.AppUsesSecondJoystick ? 2 : (Globals.AppUsesJoystick ? 1 : 0)) );
 					Settings.nativeSetupScreenKeyboard(	Globals.TouchscreenKeyboardSize,
 														Globals.TouchscreenKeyboardDrawSize,
 														Globals.TouchscreenKeyboardTheme,

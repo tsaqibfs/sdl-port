@@ -81,12 +81,12 @@ SDLK_UNKNOWN, // Text input
 SDLK_UNKNOWN, // Joystick 0
 SDLK_UNKNOWN, // Joystick 1
 SDLK_UNKNOWN, // Joystick 2
+SDL_KEY(SDL_KEY_VAL(SDL_ANDROID_SCREENKB_KEYCODE_6)),
+SDL_KEY(SDL_KEY_VAL(SDL_ANDROID_SCREENKB_KEYCODE_7)),
+SDL_KEY(SDL_KEY_VAL(SDL_ANDROID_SCREENKB_KEYCODE_8)),
+SDL_KEY(SDL_KEY_VAL(SDL_ANDROID_SCREENKB_KEYCODE_9)),
 SDL_KEY(SDL_KEY_VAL(SDL_ANDROID_SCREENKB_KEYCODE_10)),
 SDL_KEY(SDL_KEY_VAL(SDL_ANDROID_SCREENKB_KEYCODE_11)),
-SDL_KEY(SDL_KEY_VAL(SDL_ANDROID_SCREENKB_KEYCODE_12)),
-SDL_KEY(SDL_KEY_VAL(SDL_ANDROID_SCREENKB_KEYCODE_13)),
-SDL_KEY(SDL_KEY_VAL(SDL_ANDROID_SCREENKB_KEYCODE_14)),
-SDL_KEY(SDL_KEY_VAL(SDL_ANDROID_SCREENKB_KEYCODE_15)),
 };
 
 enum { ARROW_LEFT = 1, ARROW_RIGHT = 2, ARROW_UP = 4, ARROW_DOWN = 8 };
@@ -886,12 +886,17 @@ JAVA_EXPORT_NAME(Settings_nativeSetupScreenKeyboard) ( JNIEnv* env, jobject thiz
 	for(ii = 0; ii < 2; ii++)
 	{
 		// Custom button ordering
-		int iii = ii + i*2;
+		int iii = ii + i * 2;
 		buttons[iii].w = buttonSizePixels;
 		buttons[iii].h = buttons[iii].w;
 		// Move to the screen edge
 		buttons[iii].x = SDL_ANDROID_sRealWindowWidth - buttons[iii].w * (ii + 1);
 		buttons[iii].y = SDL_ANDROID_sRealWindowHeight - buttons[iii].h * (i + 1);
+		// Second set of buttons to the left
+		buttons[iii + SDL_ANDROID_SCREENKEYBOARD_BUTTON_6].x = buttons[iii].x - buttonSizePixels * 2;
+		buttons[iii + SDL_ANDROID_SCREENKEYBOARD_BUTTON_6].y = buttons[iii].y;
+		buttons[iii + SDL_ANDROID_SCREENKEYBOARD_BUTTON_6].w = buttons[iii].w;
+		buttons[iii + SDL_ANDROID_SCREENKEYBOARD_BUTTON_6].h = buttons[iii].h;
 	}
 	if( SDL_ANDROID_joysticksAmount >= 2 )
 	{

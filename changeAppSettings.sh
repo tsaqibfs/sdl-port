@@ -90,43 +90,64 @@ fi
 
 
 if [ -z "$AppVersionCode" -o "-$AUTO" != "-a" ]; then
-echo
-echo -n "Application version code (integer) ($AppVersionCode): "
-read var
-if [ -n "$var" ] ; then
-	AppVersionCode="$var"
-	CHANGED=1
-fi
+	echo
+	echo -n "Application version code (integer) ($AppVersionCode): "
+	read var
+	if [ -n "$var" ] ; then
+		AppVersionCode="$var"
+		CHANGED=1
+	fi
 fi
 
 if [ -z "$AppVersionName" -o "-$AUTO" != "-a" ]; then
-echo
-echo -n "Application user-visible version name (string) ($AppVersionName): "
-read var
-if [ -n "$var" ] ; then
-	AppVersionName="$var"
-	CHANGED=1
-fi
+	echo
+	echo -n "Application user-visible version name (string) ($AppVersionName): "
+	read var
+	if [ -n "$var" ] ; then
+		AppVersionName="$var"
+		CHANGED=1
+	fi
 fi
 
 if [ -z "$ResetSdlConfigForThisVersion" -o "-$AUTO" != "-a" ]; then
-echo
-echo -n "Reset SDL config when updating application to the new version (y) / (n) ($ResetSdlConfigForThisVersion): "
-read var
-if [ -n "$var" ] ; then
-	ResetSdlConfigForThisVersion="$var"
-	CHANGED=1
-fi
+	echo
+	echo -n "Reset SDL config when updating application to the new version (y) / (n) ($ResetSdlConfigForThisVersion): "
+	read var
+	if [ -n "$var" ] ; then
+		ResetSdlConfigForThisVersion="$var"
+		CHANGED=1
+	fi
 fi
 
 if [ "-$AUTO" != "-a" ]; then
-echo
-echo -n "Delete application data files when upgrading (specify file/dir paths separated by spaces): ($DeleteFilesOnUpgrade): "
-read var
-if [ -n "$var" ] ; then
-	DeleteFilesOnUpgrade="$var"
-	CHANGED=1
+	echo
+	echo -n "Delete application data files when upgrading (specify file/dir paths separated by spaces): ($DeleteFilesOnUpgrade): "
+	read var
+	if [ -n "$var" ] ; then
+		DeleteFilesOnUpgrade="$var"
+		CHANGED=1
+	fi
 fi
+
+# Compatibility - if RedefinedKeysScreenGestures is empty, copy keycodes from RedefinedKeysScreenKb
+KEY2=0
+if [ -z "$RedefinedKeysScreenGestures" ] ; then
+	RedefinedKeysScreenGestures="$(
+		for KEY in $RedefinedKeysScreenKb; do
+			if [ $KEY2 -ge 6 ] && [ $KEY2 -le 9 ]; then
+				echo -n $KEY ' '
+			fi
+			KEY2=$(expr $KEY2 '+' 1)
+		done
+	)"
+	RedefinedKeysScreenKb="$(
+		for KEY in $RedefinedKeysScreenKb; do
+			if [ $KEY2 -lt 6 ] || [ $KEY2 -gt 9 ]; then
+				echo -n $KEY ' '
+			fi
+			KEY2=$(expr $KEY2 '+' 1)
+		done
+	)"
 fi
 
 if [ -n "$CHANGED" ]; then
@@ -348,8 +369,10 @@ echo >> AndroidAppSettings.cfg
 echo "# Number of virtual keyboard keys - currently 12 keys is the maximum" >> AndroidAppSettings.cfg
 echo AppTouchscreenKeyboardKeysAmount=$AppTouchscreenKeyboardKeysAmount >> AndroidAppSettings.cfg
 echo >> AndroidAppSettings.cfg
-echo "# Redefine on-screen keyboard keys to SDL keysyms - 6 keyboard keys + 4 multitouch gestures (zoom in/out and rotate left/right) + 6 additional keyboard keys" >> AndroidAppSettings.cfg
-echo "# Multitouch gestures should be moved to a separate variable, but are left here for compatibility" >> AndroidAppSettings.cfg
+echo "# Define SDL keysyms for multitouch gestures - pinch-zoom in, pinch-zoom out, rotate left, rotate right" >> AndroidAppSettings.cfg
+echo RedefinedKeysScreenGestures=\"$RedefinedKeysScreenGestures\" >> AndroidAppSettings.cfg
+echo >> AndroidAppSettings.cfg
+echo "# Redefine on-screen keyboard keys to SDL keysyms - currently 12 keys is the maximum" >> AndroidAppSettings.cfg
 echo RedefinedKeysScreenKb=\"$RedefinedKeysScreenKb\" >> AndroidAppSettings.cfg
 echo >> AndroidAppSettings.cfg
 echo "# Names for on-screen keyboard keys, such as Fire, Jump, Run etc, separated by spaces, they are used in SDL config menu" >> AndroidAppSettings.cfg
@@ -712,6 +735,12 @@ for KEY in $RedefinedKeys; do
 done
 
 KEY2=0
+for KEY in $RedefinedKeysScreenGestures; do
+	RedefinedSDLScreenGestures="$RedefinedSDLScreenGestures -DSDL_ANDROID_SCREEN_GESTURE_KEYCODE_$KEY2=$KEY"
+	KEY2=`expr $KEY2 '+' 1`
+done
+
+KEY2=0
 for KEY in $RedefinedKeysScreenKb; do
 	RedefinedKeycodesScreenKb="$RedefinedKeycodesScreenKb -DSDL_ANDROID_SCREENKB_KEYCODE_$KEY2=$KEY"
 	KEY2=`expr $KEY2 '+' 1`
@@ -1026,6 +1055,7 @@ cat project/jni/SettingsTemplate.mk | \
 	sed "s^USE_GL4ES :=.*^USE_GL4ES := $UseGl4es^" | \
 	sed "s^SDL_ADDITIONAL_CFLAGS :=.*^SDL_ADDITIONAL_CFLAGS := \
 		$RedefinedKeycodes \
+		$RedefinedSDLScreenGestures \
 		$RedefinedKeycodesScreenKb \
 		$RedefinedKeycodesGamepad \
 		$CompatibilityHacksPreventAudioChopping \
