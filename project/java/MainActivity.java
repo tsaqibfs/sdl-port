@@ -1501,6 +1501,7 @@ public class MainActivity extends Activity
 	public boolean writeExternalStoragePermissionDialogAnswered = false;
 
 	public String ObbMountPath = null;
+	public String assetPackPath = null; // Not saved to the config file
 }
 
 // *** HONEYCOMB / ICS FIX FOR FULLSCREEN MODE, by lmak ***

@@ -59,7 +59,11 @@ import android.content.pm.PackageManager;
 
 import android.os.storage.StorageManager;
 import android.os.storage.OnObbStateChangeListener;
-
+//import com.google.android.play.core.assetpacks.AssetPackManagerFactory;
+//import com.google.android.play.core.assetpacks.AssetPackManager;
+import android.content.res.AssetManager;
+import android.content.pm.PackageManager;
+import android.content.pm.ApplicationInfo;
 
 class CountingInputStream extends BufferedInputStream
 {
@@ -323,7 +327,66 @@ class DataDownloader extends Thread
 					partialDownloadLen = partialDownload.length();
 			}
 			Status.setText( downloadCount + "/" + downloadTotal + ": " + res.getString(R.string.connecting_to, url) );
-			if( url.indexOf("obb:") == 0 || url.indexOf("mnt:") == 0 ) // APK expansion file provided by Google Play
+			if( url.equals("assetpack") )
+			{
+				Log.i("SDL", "Checking for asset pack");
+				/*
+				try
+				{
+					AssetPackManager assetPackManager = AssetPackManagerFactory.getInstance(Parent.getApplicationContext());
+					Log.i("SDL", "Parent.getApplicationContext(): " + Parent.getApplicationContext() + " assetPackManager " + assetPackManager);
+					if( assetPackManager != null )
+					{
+						Log.i("SDL", "assetPackManager.getPackLocation(): " + assetPackManager.getPackLocation("assetpack"));
+						if( assetPackManager.getPackLocation("assetpack") != null )
+						{
+							String assetPackPath = assetPackManager.getPackLocation("assetpack").assetsPath();
+							Parent.assetPackPath = assetPackPath;
+							if( assetPackPath != null )
+							{
+								Log.i("SDL", "Asset pack is installed at: " + assetPackPath);
+								return true;
+							}
+						}
+					}
+				}
+				catch( Exception e )
+				{
+					Log.i("SDL", "Asset pack exception: " + e);
+				}
+				*/
+				try
+				{
+					if( android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP )
+					{
+						ApplicationInfo info = Parent.getPackageManager().getApplicationInfo(Parent.getPackageName(), 0);
+						if( info.splitSourceDirs != null )
+						{
+							for( String apk: info.splitSourceDirs )
+							{
+								Log.i("SDL", "Package apk: " + apk);
+								if( apk.endsWith("assetpack.apk") )
+								{
+									Parent.assetPackPath = apk;
+								}
+							}
+						}
+					}
+				}
+				catch( Exception e )
+				{
+					Log.i("SDL", "Asset pack exception: " + e);
+				}
+				if( Parent.assetPackPath != null )
+				{
+					Log.i("SDL", "Found asset pack: " + Parent.assetPackPath);
+					return true;
+				}
+				Log.i("SDL", "Asset pack is not installed");
+				downloadUrlIndex++;
+				continue;
+			}
+			else if( url.indexOf("obb:") == 0 || url.indexOf("mnt:") == 0 ) // APK expansion file provided by Google Play
 			{
 				boolean tmpMountObb = ( url.indexOf("mnt:") == 0 );
 				url = getObbFilePath(url);

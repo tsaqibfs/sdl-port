@@ -690,6 +690,10 @@ public class Settings
 		{
 			nativeSetEnv( "ANDROID_OBB_MOUNT_DIR", p.ObbMountPath );
 		}
+		if( p.assetPackPath != null )
+		{
+			nativeSetEnv( "ANDROID_ASSET_PACK_PATH", p.assetPackPath );
+		}
 		try {
 			nativeSetEnv( "ANDROID_APP_NAME", p.getString(p.getApplicationInfo().labelRes) );
 		} catch (Exception eeeeee) {}

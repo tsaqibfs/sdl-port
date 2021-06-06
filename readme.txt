@@ -134,10 +134,16 @@ env CXXFLAGS='-frtti -fexceptions' ../setEnvironment.sh ./configure
 Application data may be bundled with app itself, or downloaded from the internet on the first run -
 if you want to put app data inside .apk file - create a .zip archive and put it into the directory
 project/jni/application/src/AndroidData (create it if it doesn't exist), then run ChangeAppSettings.sh
-and specify the file name there. If the data files are more than 10 Mb it's a good idea to put them
-on public HTTP server - you may specify URL in ChangeAppSettings.sh, also you may specify several files.
+and specify the file name there. If the data files are more than 150 Mb then it's a good idea to put them
+on public HTTP server - you may specify URL in AppDataDownloadUrl in AndroidAppSettings.cfg, also you may specify several files.
 If you'll release new version of data files you should change download URL or data file name and update your app as well -
 the app will re-download the data if URL does not match the saved URL from previous download.
+
+AppDataDownloadUrl can have several URLs in the form "Description|URL|MirrorURL^Description2|URL2|MirrorURL2^..."
+If you'll start Description with '!' symbol it will be enabled by default, '!!' will also hide the entry from the menu, so it cannot be disabled.
+If the URL in in the form ':dir/file.dat:http://URL/' it will be downloaded as binary BLOB to the application dir and not unzipped.
+If the URL does not contain 'http://' or 'https://', it is treated as file from 'project/jni/application/src/AndroidData' dir -
+these files are put inside .apk package by the build system.
 
 You can also create .obb file using jobb tool, and attach it to your app on Play Store:
 
@@ -159,6 +165,17 @@ so you may wish to specify a backup download location:
 AppDataDownloadUrl="!!Game data|mnt:main.123|https://yourserver.xyz/gamedata.zip"
 
 You also need to specify ReadObbFile=y inside AndroidAppSettings.cfg.
+
+Android app bundles do not support .obb files, they use asset packs instead.
+This app project includes one pre-configured install-time asset pack.
+To put your data into asset pack, copy it to the directory AndroidData/assetpack
+and run changeAppSettings.sh. The asset pack zip archive will be returned by
+getenv("ANDROID_ASSET_PACK_PATH"), this call will return NULL if the asset pack is not installed.
+You can put "assetpack" keyword to AppDataDownloadUrl, the code will check
+if the asset pack is installed and will not download the data from other URLs.
+You can extract files from the asset pack the same way you extract files from the app assets.
+
+AppDataDownloadUrl="!!Game data|assetpack|https://yourserver.xyz/gamedata.zip"
 
 All devices have different screen resolutions, you may toggle automatic screen resizing
 in ChangeAppSettings.sh and draw to virtual 640x480 screen - it will be HW accelerated

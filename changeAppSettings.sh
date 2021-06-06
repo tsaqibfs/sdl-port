@@ -166,7 +166,7 @@ echo >> AndroidAppSettings.cfg
 echo "# Application user-visible version name (string)" >> AndroidAppSettings.cfg
 echo AppVersionName=\"$AppVersionName\" >> AndroidAppSettings.cfg
 echo >> AndroidAppSettings.cfg
-echo "# Specify path to download application data in zip archive in the form 'Description|URL|MirrorURL^Description2|URL2|MirrorURL2^...'" >> AndroidAppSettings.cfg
+echo "# Specify path to download application data in zip archive in the form \"Description|URL|MirrorURL^Description2|URL2|MirrorURL2^...\"" >> AndroidAppSettings.cfg
 echo "# If you'll start Description with '!' symbol it will be enabled by default, '!!' will also hide the entry from the menu, so it cannot be disabled" >> AndroidAppSettings.cfg
 echo "# If the URL in in the form ':dir/file.dat:http://URL/' it will be downloaded as binary BLOB to the application dir and not unzipped" >> AndroidAppSettings.cfg
 echo "# If the URL does not contain 'http://' or 'https://', it is treated as file from 'project/jni/application/src/AndroidData' dir -" >> AndroidAppSettings.cfg
@@ -174,6 +174,14 @@ echo "# these files are put inside .apk package by the build system" >> AndroidA
 echo "# You can specify Google Play expansion files in the form 'obb:main.12345' or 'obb:patch.12345' where 12345 is the app version for the obb file" >> AndroidAppSettings.cfg
 echo "# You can mount expansion files created with jobb tool if you put 'mnt:main.12345' or 'mnt:patch.12345'" >> AndroidAppSettings.cfg
 echo "# The mount directory will be returned by calling getenv(\"ANDROID_OBB_MOUNT_DIR\")" >> AndroidAppSettings.cfg
+echo "# Android app bundles do not support .obb files, they use asset packs instead." >> AndroidAppSettings.cfg
+echo "# This app project includes one pre-configured install-time asset pack." >> AndroidAppSettings.cfg
+echo "# To put your data into asset pack, copy it to the directory AndroidData/assetpack" >> AndroidAppSettings.cfg
+echo "# and run changeAppSettings.sh. The asset pack zip archive will be returned by" >> AndroidAppSettings.cfg
+echo "# getenv(\"ANDROID_ASSET_PACK_PATH\"), this call will return NULL if the asset pack is not installed." >> AndroidAppSettings.cfg
+echo "# You can put \"assetpack\" keyword to AppDataDownloadUrl, the code will check" >> AndroidAppSettings.cfg
+echo "# if the asset pack is installed and will not download the data from other URLs." >> AndroidAppSettings.cfg
+echo "# You can extract files from the asset pack the same way you extract files from the app assets." >> AndroidAppSettings.cfg
 echo "# You can use .zip.xz archives for better compression, but you need to add 'lzma' to CompiledLibraries" >> AndroidAppSettings.cfg
 echo "# Generate .zip.xz files like this: zip -0 -r data.zip your-data/* ; xz -8 data.zip" >> AndroidAppSettings.cfg
 echo AppDataDownloadUrl=\"$AppDataDownloadUrl\" >> AndroidAppSettings.cfg
@@ -1114,6 +1122,10 @@ else
 		echo "Unpack it, then place file proguard.jar to $PROGUARD"
 		exit 1
 	}
+fi
+
+if [ -z "`ls project/assetpack/src/main/assets/ 2>/dev/null`" ] ; then
+	$SEDI "/==ASSETPACK==/ d" project/app/build.gradle
 fi
 
 if [ -e project/jni/application/src/project.patch ]; then patch -p1 --dry-run -f -R < project/jni/application/src/project.patch > /dev/null 2>&1 || patch -p1 --no-backup-if-mismatch < project/jni/application/src/project.patch || exit 1 ; fi
