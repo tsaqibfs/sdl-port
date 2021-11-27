@@ -21,6 +21,7 @@
 				  android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize|layoutDirection"
 				  android:windowSoftInputMode="stateUnspecified"
 				  android:theme="@style/AppTheme"
+				  android:exported="true"
 		>
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
@@ -56,6 +57,7 @@
 				  android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize|layoutDirection"
 				  android:windowSoftInputMode="stateUnspecified"
 				  android:process=":RestartMainActivity"
+				  android:exported="true"
 		/>
 		<service android:name=".DummyService"
 				 android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize|layoutDirection"
