@@ -11,8 +11,6 @@ TODO, which will get actually done
 
 - SDL: add option for non-fullscreen non-immersive mode.
 
-- SDL: support for mounting OBB files as directories: https://developer.android.com/google/play/expansion-files.html
-
 - SDL: SdlVideoResizeKeepAspect=y mouse location shifted near right border.
 
 - SDL: Text input window still blocks touches sometimes after text input is finished.
