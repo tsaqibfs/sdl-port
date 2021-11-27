@@ -53,14 +53,13 @@ import java.util.Arrays;
 import android.text.SpannedString;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
 
 import android.os.storage.StorageManager;
 import android.os.storage.OnObbStateChangeListener;
-//import com.google.android.play.core.assetpacks.AssetPackManagerFactory;
-//import com.google.android.play.core.assetpacks.AssetPackManager;
 import android.content.res.AssetManager;
 import android.content.pm.PackageManager;
 import android.content.pm.ApplicationInfo;
@@ -219,6 +218,16 @@ class DataDownloader extends Thread
 							! DownloadDataFile(downloadFiles[i].replace("<ARCH>", android.os.Build.CPU_ABI2), DOWNLOAD_FLAG_FILENAME + String.valueOf(i) + ".flag", count+1, total, i) ) )
 					{
 						DownloadFailed = true;
+						if (!Parent.getFilesDir().getAbsolutePath().equals(Globals.DataDir))
+						{
+							Globals.DataDir = Parent.getFilesDir().getAbsolutePath();
+							Globals.DownloadToSdcard = false;
+							Log.i("SDL", "Switching download destination directory to internal storage and restarting the app: " + Globals.DataDir);
+							Settings.Save(Parent);
+							Intent intent = new Intent(Parent, RestartMainActivity.class);
+							Parent.startActivity(intent);
+							System.exit(0);
+						}
 						return;
 					}
 				}
