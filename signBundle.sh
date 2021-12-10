@@ -12,14 +12,14 @@ APPVER=`grep AppVersionName AndroidAppSettings.cfg | sed 's/.*=//' | tr -d '"' |
 
 cd project
 
-./gradlew bundleRelease || exit 1
+./gradlew bundleReleaseWithDebugInfo || exit 1
 
-../copyAssets.sh pack-binaries-bundle app/build/outputs/bundle/release/app-release.aab
+../copyAssets.sh pack-binaries-bundle app/build/outputs/bundle/releaseWithDebugInfo/app-releaseWithDebugInfo.aab
 
-cd app/build/outputs/bundle/release || exit 1
+cd app/build/outputs/bundle/releaseWithDebugInfo || exit 1
 
 # Remove old certificate
-cp -f app-release.aab ../../../../../../$APPNAME-$APPVER.aab || exit 1
+cp -f app-releaseWithDebugInfo.aab ../../../../../../$APPNAME-$APPVER.aab || exit 1
 # Sign with the new certificate
 echo Using keystore $ANDROID_UPLOAD_KEYSTORE_FILE and alias $ANDROID_UPLOAD_KEYSTORE_ALIAS
 stty -echo
