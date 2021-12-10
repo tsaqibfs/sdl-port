@@ -1,6 +1,6 @@
 #!/bin/sh
 
-VER=1.11.2-2
+VER=12.1-0
 
 cd data
 rm -f ../AndroidData/openttd-data-*.zip.xz ../AndroidData/openttd-data-*.zip
