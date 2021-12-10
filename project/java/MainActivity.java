@@ -1274,6 +1274,11 @@ public class MainActivity extends Activity
 					if( entry.isDirectory() )
 					{
 						File outDir = new File( libDir.getAbsolutePath() + "/" + entry.getName() );
+						if( !outDir.getCanonicalPath().startsWith(libDir.getAbsolutePath() + "/") )
+						{
+							Log.i("SDL", "Security exception: " + outDir.getCanonicalPath());
+							return;
+						}
 						if( !(outDir.exists() && outDir.isDirectory()) )
 							outDir.mkdirs();
 						continue;
@@ -1284,6 +1289,11 @@ public class MainActivity extends Activity
 					try
 					{
 						File outDir = new File( path.substring(0, path.lastIndexOf("/") ));
+						if( !outDir.getCanonicalPath().startsWith(libDir.getAbsolutePath() + "/") )
+						{
+							Log.i("SDL", "Security exception: " + outDir.getCanonicalPath());
+							return;
+						}
 						if( !(outDir.exists() && outDir.isDirectory()) )
 							outDir.mkdirs();
 					}
@@ -1305,6 +1315,11 @@ public class MainActivity extends Activity
 					} catch( Exception eeeeee ) { }
 
 					Log.i("SDL", "Saving to file '" + path + "'");
+					if( !(new File(path).getCanonicalPath().startsWith(libDir.getAbsolutePath() + "/")) )
+					{
+						Log.i("SDL", "Security exception: " + path);
+						return;
+					}
 
 					out = new FileOutputStream( path );
 					int len = zip.read(buf);
