@@ -20,11 +20,10 @@ BOOST_LIBS := \
 	coroutine \
 	date_time \
 	exception \
-	fiber \
 	filesystem \
 	graph \
 	iostreams \
-	locale \
+	json \
 	log \
 	log_setup \
 	math_c99 \
@@ -33,13 +32,12 @@ BOOST_LIBS := \
 	math_tr1 \
 	math_tr1f \
 	math_tr1l \
+	nowide \
 	prg_exec_monitor \
 	program_options \
 	random \
 	regex \
 	serialization \
-	stacktrace_basic \
-	stacktrace_noop \
 	system \
 	test_exec_monitor \
 	thread \
@@ -48,6 +46,7 @@ BOOST_LIBS := \
 	unit_test_framework \
 	wave \
 	wserialization \
+
 
 BOOST := $(foreach ARCH, $(ARCHES32) $(ARCHES64), $(foreach NAME, $(BOOST_LIBS), boost/lib/$(ARCH)/libboost_$(NAME).a))
 
