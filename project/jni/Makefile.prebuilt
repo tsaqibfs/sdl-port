@@ -6,7 +6,7 @@ ARCHES64 := arm64-v8a x86_64
 
 ICONV := $(foreach ARCH, $(ARCHES32) $(ARCHES64), iconv/lib/$(ARCH)/libiconv.so iconv/lib/$(ARCH)/libcharset.so)
 
-ICU_LIBS := icudata icui18n icuio icutest icutu icuuc iculx icu-le-hb harfbuzz
+ICU_LIBS := icudata icui18n icuio icutest icutu icuuc iculx icu-le-hb
 ICU := $(foreach ARCH, $(ARCHES32) $(ARCHES64), $(foreach NAME, $(ICU_LIBS), icuuc/lib/$(ARCH)/lib$(NAME).a))
 
 OPENSSL := $(foreach ARCH, $(ARCHES32) $(ARCHES64), openssl/lib-$(ARCH)/libcrypto.so.sdl.1.so openssl/lib-$(ARCH)/libssl.so.sdl.1.so)
@@ -69,7 +69,6 @@ $(ICONV) $(ICU): iconv/src/build.sh
 		cp -f $$ARCH/libiconv.so $$ARCH/libcharset.so ../lib/$$ARCH/  ; \
 		cp -f $$ARCH/include/*.h ../include/  ; \
 		mkdir -p ../../icuuc/lib/$$ARCH ../../icuuc/include/unicode ../../icuuc/include/layout  ; \
-		cp -f $$ARCH/libicu*.a $$ARCH/libharfbuzz.a ../../icuuc/lib/$$ARCH/  ; \
 		cp -f $$ARCH/include/unicode/*.h ../../icuuc/include/unicode/  ; \
 		cp -f $$ARCH/include/layout/*.h ../../icuuc/include/layout/  ; \
 		cp -f $$ARCH/include/icu-le-hb/layout/*.h ../../icuuc/include/layout/  ; \
