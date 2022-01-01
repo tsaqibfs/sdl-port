@@ -90,3 +90,6 @@
 [submodule "project/jni/sdl2_image"]
 	path = project/jni/sdl2_image
 	url = https://github.com/libsdl-org/SDL_image
+[submodule "project/jni/sdl2_ttf"]
+	path = project/jni/sdl2_ttf
+	url = https://github.com/libsdl-org/SDL_ttf.git
