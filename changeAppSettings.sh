@@ -196,7 +196,7 @@ echo "# Here you may type readme text, which will be shown during startup. Forma
 echo "# Text in English, use \\\\\\\\\\\\\\\\n to separate lines (that's four backslashes)^de:Text in Deutsch^ru:Text in Russian^button:Button that will open some URL:http://url-to-open/" >> AndroidAppSettings.cfg
 echo ReadmeText=\'$ReadmeText\' | sed 's/\\\\n/\\\\\\\\n/g' >> AndroidAppSettings.cfg
 echo >> AndroidAppSettings.cfg
-echo "# libSDL version to use (1.2/1.3/2.0)" >> AndroidAppSettings.cfg
+echo "# libSDL version to use (1.2/2.0)" >> AndroidAppSettings.cfg
 echo LibSdlVersion=$LibSdlVersion >> AndroidAppSettings.cfg
 echo >> AndroidAppSettings.cfg
 echo "# Specify screen orientation: (v)ertical/(p)ortrait or (h)orizontal/(l)andscape" >> AndroidAppSettings.cfg
