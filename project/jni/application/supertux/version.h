@@ -1,4 +1,5 @@
 #ifndef VERSION_H
 #define VERSION_H
-#define PACKAGE_VERSION "v0.5.1-517-g7d5b9737d"
+#define PACKAGE_VERSION "v0.6.3"
+#define SUPERTUX_BUILD_NUMBER "0.6.3"
 #endif
