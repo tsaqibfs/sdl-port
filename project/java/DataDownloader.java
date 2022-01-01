@@ -338,54 +338,6 @@ class DataDownloader extends Thread
 			Status.setText( downloadCount + "/" + downloadTotal + ": " + res.getString(R.string.connecting_to, url) );
 			if( url.equals("assetpack") )
 			{
-				Log.i("SDL", "Checking for asset pack");
-				/*
-				try
-				{
-					AssetPackManager assetPackManager = AssetPackManagerFactory.getInstance(Parent.getApplicationContext());
-					Log.i("SDL", "Parent.getApplicationContext(): " + Parent.getApplicationContext() + " assetPackManager " + assetPackManager);
-					if( assetPackManager != null )
-					{
-						Log.i("SDL", "assetPackManager.getPackLocation(): " + assetPackManager.getPackLocation("assetpack"));
-						if( assetPackManager.getPackLocation("assetpack") != null )
-						{
-							String assetPackPath = assetPackManager.getPackLocation("assetpack").assetsPath();
-							Parent.assetPackPath = assetPackPath;
-							if( assetPackPath != null )
-							{
-								Log.i("SDL", "Asset pack is installed at: " + assetPackPath);
-								return true;
-							}
-						}
-					}
-				}
-				catch( Exception e )
-				{
-					Log.i("SDL", "Asset pack exception: " + e);
-				}
-				*/
-				try
-				{
-					if( android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP )
-					{
-						ApplicationInfo info = Parent.getPackageManager().getApplicationInfo(Parent.getPackageName(), 0);
-						if( info.splitSourceDirs != null )
-						{
-							for( String apk: info.splitSourceDirs )
-							{
-								Log.i("SDL", "Package apk: " + apk);
-								if( apk.endsWith("assetpack.apk") )
-								{
-									Parent.assetPackPath = apk;
-								}
-							}
-						}
-					}
-				}
-				catch( Exception e )
-				{
-					Log.i("SDL", "Asset pack exception: " + e);
-				}
 				if( Parent.assetPackPath != null )
 				{
 					Log.i("SDL", "Found asset pack: " + Parent.assetPackPath);

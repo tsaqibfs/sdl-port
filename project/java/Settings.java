@@ -1001,6 +1001,7 @@ public class Settings
 		Save(MainActivity.instance);
 	}
 
+	// libsdl-1.2.so, does not exist in SDL2
 	private static native void nativeSetAccelerometerSettings(int sensitivity, int centerPos);
 	private static native void nativeSetMouseUsed(int RightClickMethod, int ShowScreenUnderFinger, int LeftClickMethod, 
 													int MoveMouseWithJoystick, int ClickMouseWithDpad, int MaxForce, int MaxRadius,
@@ -1035,6 +1036,7 @@ public class Settings
 	private static native void nativeSetKeymapKeyMultitouchGesture(int keynum, int key);
 	private static native void nativeSetMultitouchGestureSensitivity(int sensitivity);
 	public static native void nativeSetTouchscreenCalibration(int x1, int y1, int x2, int y2);
+	// libsdl_native_helpers.so, exists in both versions
 	public static native void  nativeSetEnv(final String name, final String value);
 	public static native int   nativeChmod(final String name, int mode);
 	public static native void  nativeChdir(final String dir);

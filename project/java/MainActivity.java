@@ -188,6 +188,31 @@ public class MainActivity extends Activity
 		_videoLayout.requestFocus();
 		DimSystemStatusBar.dim(_videoLayout, getWindow());
 
+		Log.i("SDL", "Checking for asset pack");
+		try
+		{
+			if( android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP )
+			{
+				ApplicationInfo info = this.getPackageManager().getApplicationInfo(Parent.getPackageName(), 0);
+				if( info.splitSourceDirs != null )
+				{
+					for( String apk: info.splitSourceDirs )
+					{
+						Log.i("SDL", "Package apk: " + apk);
+						if( apk.endsWith("assetpack.apk") )
+						{
+							this.assetPackPath = apk;
+							Log.i("SDL", "Found asset pack: " + this.assetPackPath);
+						}
+					}
+				}
+			}
+		}
+		catch( Exception eee )
+		{
+			Log.i("SDL", "Asset pack exception: " + eee);
+		}
+
 		class Callback implements Runnable
 		{
 			MainActivity p;
