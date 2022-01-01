@@ -89,6 +89,7 @@ $(BOOST): boost/src/build-android.sh
 		cp -r -f build/out/$$ARCH/include/boost-*/* ../include/ || exit 1 ; \
 	done || exit 1 ; \
 	git clean -f -d -x ; \
+	git -C libiconv-libicu-android clean -f -d -x ; \
 	$(foreach NAME, $(BOOST_LIBS), ln -sf boost ../../boost_$(NAME) ;)
 
 iconv/src/build.sh boost/src/build-android.sh:
