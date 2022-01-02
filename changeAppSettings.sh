@@ -1155,6 +1155,9 @@ rm -rf project/obj/local/*/objs*/sdl-*/SDL_renderer_gles.o
 rm -rf project/obj/local/*/objs*/sdl_*
 rm -rf project/obj/local/*/objs*/lzma/src/XZInputStream.o
 rm -rf project/obj/local/*/objs*/liblzma.so
+rm -rf project/obj/local/*/objs*/openal/src/Alc/android.o
+rm -rf project/obj/local/*/objs*/libopenal.so
+# No need to recompile SDL2 libraries, it does not contain package name
 
 rm -rf project/jni/application/src/AndroidData/lib
 
