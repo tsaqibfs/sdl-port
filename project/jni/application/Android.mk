@@ -6,9 +6,7 @@ LOCAL_MODULE := application
 
 APPDIR := $(shell readlink $(LOCAL_PATH)/src)
 
-SDL_LIB := $(if $(filter 1.2, $(SDL_VERSION)), sdl-1.2, SDL2)
-
-LOCAL_SHARED_LIBRARIES := $(SDL_LIB_NAME) $(filter-out $(APP_AVAILABLE_STATIC_LIBS), $(COMPILED_LIBRARIES))
+LOCAL_SHARED_LIBRARIES := $(if $(filter 1.2, $(SDL_VERSION)), sdl-1.2, SDL2) $(filter-out $(APP_AVAILABLE_STATIC_LIBS), $(COMPILED_LIBRARIES))
 
 LOCAL_STATIC_LIBRARIES := $(filter $(APP_AVAILABLE_STATIC_LIBS), $(COMPILED_LIBRARIES))
 
@@ -47,7 +45,7 @@ LOCAL_CFLAGS += $(foreach D, $(LOCAL_C_INCLUDES), -iquote$(D))
 LOCAL_C_INCLUDES :=
 endif
 
-LOCAL_C_INCLUDES += $(LOCAL_PATH)/../$(SDL_LIB_NAME)/include
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/../$(strip $(if $(filter 1.2, $(SDL_VERSION)), sdl-1.2, SDL2))/include
 LOCAL_C_INCLUDES += $(foreach L, $(COMPILED_LIBRARIES), $(LOCAL_PATH)/../$(L)/include)
 
 LOCAL_CFLAGS += $(APPLICATION_ADDITIONAL_CFLAGS)
