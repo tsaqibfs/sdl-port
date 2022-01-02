@@ -1,4 +1,6 @@
 
+SDL_VERSION := 1.2
+
 # To filter out static libs from all libs in makefile
 APP_AVAILABLE_STATIC_LIBS := jpeg png freetype fontconfig xerces ogg vorbis flac \
 	boost_atomic boost_chrono boost_container boost_context boost_coroutine boost_date_time boost_exception boost_filesystem \
@@ -12,7 +14,7 @@ APP_AVAILABLE_STATIC_LIBS := jpeg png freetype fontconfig xerces ogg vorbis flac
 APP_MODULES := application sdl-1.2 sdl_native_helpers jpeg png ogg flac vorbis freetype tremor ogg
 
 ifeq ($(CUSTOM_BUILD_SCRIPT_FIRST_PASS),)
-APP_MODULES += application sdl_main
+APP_MODULES += application $(if $(filter 1.2, $(SDL_VERSION)), sdl_main)
 endif
 
 ifeq ($(APP_ABI),)
@@ -61,8 +63,6 @@ APPLICATION_CUSTOM_BUILD_SCRIPT :=
 USE_GL4ES :=
 
 SDL_ADDITIONAL_CFLAGS := -DSDL_ANDROID_KEYCODE_MOUSE=UNKNOWN -DSDL_ANDROID_KEYCODE_0=LCTRL -DSDL_ANDROID_KEYCODE_1=LALT -DSDL_ANDROID_KEYCODE_2=SPACE -DSDL_ANDROID_KEYCODE_3=RETURN -DSDL_ANDROID_KEYCODE_4=RETURN
-
-SDL_VERSION := 1.2
 
 NDK_TOOLCHAIN_VERSION := clang
 
