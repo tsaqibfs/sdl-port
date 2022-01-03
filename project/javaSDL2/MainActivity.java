@@ -22,11 +22,21 @@ freely, subject to the following restrictions:
 package net.sourceforge.clonekeenplus;
 
 import android.app.Activity;
+import android.app.UiModeManager;
+import android.content.Context;
+import android.content.res.Configuration;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.os.Bundle;
+import android.util.Log;
+import android.widget.FrameLayout;
 import java.util.ArrayList;
 
 public class MainActivity extends org.libsdl.app.SDLActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		this.instance = this;
 		super.onCreate(savedInstanceState);
 
 		Globals.DataDir = this.getFilesDir().getAbsolutePath();
@@ -37,7 +47,7 @@ public class MainActivity extends org.libsdl.app.SDLActivity {
 		{
 			if( android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP )
 			{
-				ApplicationInfo info = this.getPackageManager().getApplicationInfo(Parent.getPackageName(), 0);
+				ApplicationInfo info = this.getPackageManager().getApplicationInfo(this.getPackageName(), 0);
 				if( info.splitSourceDirs != null )
 				{
 					for( String apk: info.splitSourceDirs )
@@ -60,6 +70,17 @@ public class MainActivity extends org.libsdl.app.SDLActivity {
 		Settings.setEnvVars(this);
 	}
 
+	public void downloadFinishedInitSDL() {
+		// TODO: implement this
+	}
+
+	@Override
+	protected void resumeNativeThread() {
+		Log.i("SDL", "Intercepted resumeNativeThread() from MainActivity");
+		super.resumeNativeThread();
+	}
+
+
 	@Override
 	protected String[] getLibraries() {
 		ArrayList<String> ret = new ArrayList<String>();
@@ -71,7 +92,7 @@ public class MainActivity extends org.libsdl.app.SDLActivity {
 
 	@Override
 	protected String[] getArguments() {
-		return new String[0];
+		return Globals.CommandLine.split(" ");
 	}
 
 	private static String GetMappedLibraryName(final String s) {
@@ -82,6 +103,41 @@ public class MainActivity extends org.libsdl.app.SDLActivity {
 		return s;
 	}
 
+	public int getApplicationVersion() {
+		try {
+			PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+			return packageInfo.versionCode;
+		} catch (PackageManager.NameNotFoundException e) {
+			Log.i("SDL", "libSDL: Cannot get the version of our own package: " + e);
+		}
+		return 0;
+	}
+
+	public boolean isRunningOnOUYA() {
+		try {
+			PackageInfo packageInfo = getPackageManager().getPackageInfo("tv.ouya", 0);
+			return true;
+		} catch (PackageManager.NameNotFoundException e) {
+		}
+		UiModeManager uiModeManager = (UiModeManager) getSystemService(UI_MODE_SERVICE);
+		return (uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION) || Globals.OuyaEmulation;
+	}
+
+	public static void setScreenOrientation() {
+		// For compatibility with SDL 1.2 code
+	}
+
+	public static void setUpStatusLabel() {
+		// For compatibility with SDL 1.2 code
+	}
+
+	public static FrameLayout getVideoLayout() {
+		// For compatibility with SDL 1.2 code
+		return null;
+	}
+
+	public static MainActivity instance = null;
 	public String ObbMountPath = null; // Deprecated, always empty
 	public String assetPackPath = null; // Not saved to the config file
+	public boolean readExternalStoragePermissionDialogAnswered = false; // Deprecated, always false
 }

@@ -177,7 +177,6 @@ class DataDownloader extends Thread
 	{
 		Parent = _Parent;
 		Status = new StatusWriter( _Status, _Parent );
-		//Status.setText( "Connecting to " + Globals.DataDownloadUrl );
 		outFilesDir = Globals.DataDir;
 		DownloadComplete = false;
 		this.start();
@@ -193,7 +192,8 @@ class DataDownloader extends Thread
 	@Override
 	public void run()
 	{
-		Parent.getVideoLayout().setOnKeyListener(new BackKeyListener(Parent));
+		if (Parent.getVideoLayout() != null)
+			Parent.getVideoLayout().setOnKeyListener(new BackKeyListener(Parent));
 
 		String [] downloadFiles = Globals.DataDownloadUrl;
 		int total = 0;
@@ -235,7 +235,8 @@ class DataDownloader extends Thread
 			}
 		}
 		DownloadComplete = true;
-		Parent.getVideoLayout().setOnKeyListener(null);
+		if (Parent.getVideoLayout() != null)
+			Parent.getVideoLayout().setOnKeyListener(null);
 		initParent();
 	}
 
@@ -855,7 +856,7 @@ class DataDownloader extends Thread
 			public MainActivity Parent;
 			public void run()
 			{
-				Parent.initSDL();
+				Parent.downloadFinishedInitSDL();
 			}
 		}
 		Callback cb = new Callback();

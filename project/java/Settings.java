@@ -629,7 +629,7 @@ public class Settings
 											Globals.TouchscreenKeyboardTransparency,
 											Globals.FloatingScreenJoystick ? 1 : 0,
 											Globals.AppTouchscreenKeyboardKeysAmount );
-				SetupTouchscreenKeyboardGraphics(p);
+				DemoGLSurfaceView.SetupTouchscreenKeyboardGraphics(p);
 				for( int i = 0; i < Globals.RemapScreenKbKeycode.length; i++ )
 					nativeSetKeymapKeyScreenKb(i, SDL_Keys.values[Globals.RemapScreenKbKeycode[i]]);
 				if( Globals.TouchscreenKeyboardSize == Globals.TOUCHSCREEN_KEYBOARD_CUSTOM )
@@ -734,63 +734,6 @@ public class Settings
 			nativeSetEnv( "DISPLAY_RESOLUTION_WIDTH", String.valueOf(Math.max(dm.widthPixels, dm.heightPixels)) );
 			nativeSetEnv( "DISPLAY_RESOLUTION_HEIGHT", String.valueOf(Math.min(dm.widthPixels, dm.heightPixels)) );
 		} catch (Exception eeeee) {}
-	}
-
-	static byte [] loadRaw(Activity p, int res)
-	{
-		byte [] buf = new byte[65536 * 2];
-		byte [] a = new byte[1048576 * 5]; // We need 5Mb buffer for Keen theme, and this Java code is inefficient
-		int written = 0;
-		try{
-			InputStream is = new GZIPInputStream(p.getResources().openRawResource(res));
-			int readed = 0;
-			while( (readed = is.read(buf)) >= 0 )
-			{
-				if( written + readed > a.length )
-				{
-					byte [] b = new byte [written + readed];
-					System.arraycopy(a, 0, b, 0, written);
-					a = b;
-				}
-				System.arraycopy(buf, 0, a, written, readed);
-				written += readed;
-			}
-		} catch(Exception e) {};
-		byte [] b = new byte [written];
-		System.arraycopy(a, 0, b, 0, written);
-		return b;
-	}
-	
-	static void SetupTouchscreenKeyboardGraphics(Activity p)
-	{
-		if( Globals.UseTouchscreenKeyboard )
-		{
-			if(Globals.TouchscreenKeyboardTheme < 0)
-				Globals.TouchscreenKeyboardTheme = 0;
-			if(Globals.TouchscreenKeyboardTheme > 9)
-				Globals.TouchscreenKeyboardTheme = 9;
-
-			if( Globals.TouchscreenKeyboardTheme == 0 )
-				nativeSetupScreenKeyboardButtons(loadRaw(p, R.raw.ultimatedroid));
-			if( Globals.TouchscreenKeyboardTheme == 1 )
-				nativeSetupScreenKeyboardButtons(loadRaw(p, R.raw.simpletheme));
-			if( Globals.TouchscreenKeyboardTheme == 2 )
-				nativeSetupScreenKeyboardButtons(loadRaw(p, R.raw.sun));
-			if( Globals.TouchscreenKeyboardTheme == 3 )
-				nativeSetupScreenKeyboardButtons(loadRaw(p, R.raw.keen));
-			if( Globals.TouchscreenKeyboardTheme == 4 )
-				nativeSetupScreenKeyboardButtons(loadRaw(p, R.raw.retro));
-			if( Globals.TouchscreenKeyboardTheme == 5 )
-				nativeSetupScreenKeyboardButtons(loadRaw(p, R.raw.gba));
-			if( Globals.TouchscreenKeyboardTheme == 6 )
-				nativeSetupScreenKeyboardButtons(loadRaw(p, R.raw.psx));
-			if( Globals.TouchscreenKeyboardTheme == 7 )
-				nativeSetupScreenKeyboardButtons(loadRaw(p, R.raw.snes));
-			if( Globals.TouchscreenKeyboardTheme == 8 )
-				nativeSetupScreenKeyboardButtons(loadRaw(p, R.raw.dualshock));
-			if( Globals.TouchscreenKeyboardTheme == 9 )
-				nativeSetupScreenKeyboardButtons(loadRaw(p, R.raw.n64));
-		}
 	}
 
 	abstract static class SdcardAppPath
@@ -1023,7 +966,7 @@ public class Settings
 	private static native void nativeSetVideoMultithreaded();
 	private static native void nativeSetVideoForceSoftwareMode();
 	public static native void  nativeSetupScreenKeyboard(int size, int drawsize, int theme, int transparency, int floatingScreenJoystick, int buttonAmount);
-	private static native void nativeSetupScreenKeyboardButtons(byte[] img);
+	public static native void nativeSetupScreenKeyboardButtons(byte[] img);
 	private static native void nativeInitKeymap();
 	private static native int  nativeGetKeymapKey(int key);
 	private static native void nativeSetKeymapKey(int javakey, int key);

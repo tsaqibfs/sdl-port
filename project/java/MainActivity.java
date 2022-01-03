@@ -43,6 +43,7 @@ import android.widget.RelativeLayout;
 import android.graphics.drawable.Drawable;
 import android.graphics.Color;
 import android.content.res.Configuration;
+import android.content.pm.ApplicationInfo;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -193,7 +194,7 @@ public class MainActivity extends Activity
 		{
 			if( android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP )
 			{
-				ApplicationInfo info = this.getPackageManager().getApplicationInfo(Parent.getPackageName(), 0);
+				ApplicationInfo info = this.getPackageManager().getApplicationInfo(this.getPackageName(), 0);
 				if( info.splitSourceDirs != null )
 				{
 					for( String apk: info.splitSourceDirs )
@@ -345,7 +346,7 @@ public class MainActivity extends Activity
 		this.runOnUiThread(cb);
 	}
 
-	public void initSDL()
+	public void downloadFinishedInitSDL()
 	{
 		setScreenOrientation();
 		updateScreenOrientation();
@@ -590,7 +591,7 @@ public class MainActivity extends Activity
 				downloader.setStatusField(_tv);
 				if( downloader.DownloadComplete )
 				{
-					initSDL();
+					downloadFinishedInitSDL();
 				}
 			}
 		}

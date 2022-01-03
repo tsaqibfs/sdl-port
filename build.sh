@@ -62,7 +62,7 @@ fi
 if [ -e project/local.properties ] && \
 	grep "package `grep AppFullName= AndroidAppSettings.cfg | sed 's/.*=//'`;" project/src/Globals.java > /dev/null 2>&1 && \
 	[ "`readlink AndroidAppSettings.cfg`" -ot "project/src/Globals.java" ] && \
-	[ -z "`find project/java/* project/AndroidManifestTemplate.xml -cnewer project/src/Globals.java`" ]
+	[ -z "`find project/java/* project/javaSDL2/* project/jni/sdl2/android-project/app/src/main/java/org/libsdl/app/* project/AndroidManifestTemplate.xml -cnewer project/src/Globals.java`" ]
 then
 	true
 else

@@ -33,11 +33,13 @@ import javax.microedition.khronos.egl.EGLDisplay;
 import javax.microedition.khronos.egl.EGLSurface;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.concurrent.locks.ReentrantLock;
 import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.zip.GZIPInputStream;
 
 import android.os.Bundle;
 import android.os.Build;
@@ -68,40 +70,6 @@ import android.content.pm.PackageManager;
 import android.hardware.input.InputManager;
 import android.graphics.Rect;
 
-
-class Mouse
-{
-	public static final int LEFT_CLICK_NORMAL = 0;
-	public static final int LEFT_CLICK_NEAR_CURSOR = 1;
-	public static final int LEFT_CLICK_WITH_MULTITOUCH = 2;
-	public static final int LEFT_CLICK_WITH_PRESSURE = 3;
-	public static final int LEFT_CLICK_WITH_KEY = 4;
-	public static final int LEFT_CLICK_WITH_TIMEOUT = 5;
-	public static final int LEFT_CLICK_WITH_TAP = 6;
-	public static final int LEFT_CLICK_WITH_TAP_OR_TIMEOUT = 7;
-	
-	public static final int RIGHT_CLICK_NONE = 0;
-	public static final int RIGHT_CLICK_WITH_MULTITOUCH = 1;
-	public static final int RIGHT_CLICK_WITH_PRESSURE = 2;
-	public static final int RIGHT_CLICK_WITH_KEY = 3;
-	public static final int RIGHT_CLICK_WITH_TIMEOUT = 4;
-
-	public static final int SDL_FINGER_DOWN = 0;
-	public static final int SDL_FINGER_UP = 1;
-	public static final int SDL_FINGER_MOVE = 2;
-	public static final int SDL_FINGER_HOVER = 3;
-
-	public static final int ZOOM_NONE = 0;
-	public static final int ZOOM_MAGNIFIER = 1;
-
-	public static final int MOUSE_HW_INPUT_FINGER = 0;
-	public static final int MOUSE_HW_INPUT_STYLUS = 1;
-	public static final int MOUSE_HW_INPUT_MOUSE = 2;
-
-	public static final int MAX_HOVER_DISTANCE = 1024;
-	public static final int HOVER_REDRAW_SCREEN = 1024 * 10;
-	public static final float MAX_PRESSURE = 1024.0f;
-}
 
 abstract class DifferentTouchInput
 {
@@ -776,7 +744,7 @@ class DemoRenderer extends GLSurfaceView_SDL.Renderer
 
 		if(mGlContextLost) {
 			mGlContextLost = false;
-			Settings.SetupTouchscreenKeyboardGraphics(context); // Reload on-screen buttons graphics
+			DemoGLSurfaceView.SetupTouchscreenKeyboardGraphics(context); // Reload on-screen buttons graphics
 			super.SwapBuffers();
 		}
 
@@ -1253,6 +1221,63 @@ class DemoGLSurfaceView extends GLSurfaceView_SDL {
 					}
 				}, 50 );
 			}
+		}
+	}
+
+	static byte [] loadRaw(Activity p, int res)
+	{
+		byte [] buf = new byte[65536 * 2];
+		byte [] a = new byte[1048576 * 5]; // We need 5Mb buffer for Keen theme, and this Java code is inefficient
+		int written = 0;
+		try{
+			InputStream is = new GZIPInputStream(p.getResources().openRawResource(res));
+			int readed = 0;
+			while( (readed = is.read(buf)) >= 0 )
+			{
+				if( written + readed > a.length )
+				{
+					byte [] b = new byte [written + readed];
+					System.arraycopy(a, 0, b, 0, written);
+					a = b;
+				}
+				System.arraycopy(buf, 0, a, written, readed);
+				written += readed;
+			}
+		} catch(Exception e) {};
+		byte [] b = new byte [written];
+		System.arraycopy(a, 0, b, 0, written);
+		return b;
+	}
+	
+	static void SetupTouchscreenKeyboardGraphics(Activity p)
+	{
+		if( Globals.UseTouchscreenKeyboard )
+		{
+			if(Globals.TouchscreenKeyboardTheme < 0)
+				Globals.TouchscreenKeyboardTheme = 0;
+			if(Globals.TouchscreenKeyboardTheme > 9)
+				Globals.TouchscreenKeyboardTheme = 9;
+
+			if( Globals.TouchscreenKeyboardTheme == 0 )
+				Settings.nativeSetupScreenKeyboardButtons(loadRaw(p, R.raw.ultimatedroid));
+			if( Globals.TouchscreenKeyboardTheme == 1 )
+				Settings.nativeSetupScreenKeyboardButtons(loadRaw(p, R.raw.simpletheme));
+			if( Globals.TouchscreenKeyboardTheme == 2 )
+				Settings.nativeSetupScreenKeyboardButtons(loadRaw(p, R.raw.sun));
+			if( Globals.TouchscreenKeyboardTheme == 3 )
+				Settings.nativeSetupScreenKeyboardButtons(loadRaw(p, R.raw.keen));
+			if( Globals.TouchscreenKeyboardTheme == 4 )
+				Settings.nativeSetupScreenKeyboardButtons(loadRaw(p, R.raw.retro));
+			if( Globals.TouchscreenKeyboardTheme == 5 )
+				Settings.nativeSetupScreenKeyboardButtons(loadRaw(p, R.raw.gba));
+			if( Globals.TouchscreenKeyboardTheme == 6 )
+				Settings.nativeSetupScreenKeyboardButtons(loadRaw(p, R.raw.psx));
+			if( Globals.TouchscreenKeyboardTheme == 7 )
+				Settings.nativeSetupScreenKeyboardButtons(loadRaw(p, R.raw.snes));
+			if( Globals.TouchscreenKeyboardTheme == 8 )
+				Settings.nativeSetupScreenKeyboardButtons(loadRaw(p, R.raw.dualshock));
+			if( Globals.TouchscreenKeyboardTheme == 9 )
+				Settings.nativeSetupScreenKeyboardButtons(loadRaw(p, R.raw.n64));
 		}
 	}
 
