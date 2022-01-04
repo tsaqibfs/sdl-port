@@ -95,6 +95,7 @@ public class MainActivity extends org.libsdl.app.SDLActivity {
 		for (String l: Globals.AppMainLibraries) {
 			ret.add(GetMappedLibraryName(l));
 		}
+		Log.v("SDL", "Loading native libraries: " + String.join(" ", ret));
 		return ret.toArray(new String[0]);
 	}
 
@@ -108,7 +109,6 @@ public class MainActivity extends org.libsdl.app.SDLActivity {
 			if (Globals.LibraryNamesMap[i][0].equals(s))
 				return Globals.LibraryNamesMap[i][1];
 		}
-		Log.v("SDL", "Loading native libraries: " + String.join(" ", ret));
 		return s;
 	}
 
