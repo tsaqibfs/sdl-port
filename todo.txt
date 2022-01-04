@@ -19,8 +19,6 @@ TODO, which will get actually done
 
 - SDL: SD card permission dialog does nothing on Android 10.
 
-- SDL: Add SDL2_mixer library and replace ogg and flac libraries.
-
 - XSDL: use pixel size instead of video mode size, Android multiwindow support.
 
 - XSDL: proper window resizing, with xrandr resizing XSDL screen buffer.

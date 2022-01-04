@@ -189,7 +189,7 @@ public class MainActivity extends Activity
 		_videoLayout.requestFocus();
 		DimSystemStatusBar.dim(_videoLayout, getWindow());
 
-		Log.i("SDL", "Checking for asset pack");
+		//Log.i("SDL", "Checking for asset pack");
 		try
 		{
 			if( android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP )

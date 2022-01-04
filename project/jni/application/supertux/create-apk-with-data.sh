@@ -11,7 +11,7 @@ OUT=`pwd`/../../../../SuperTux-with-data.apk
 rm -f $OUT $OUT-aligned
 cp ../../../../project/app/build/outputs/apk/release/app-release.apk $OUT || exit 1
 cd supertux/data || exit 1
-zip -r $OUT * || exit 1
+zip -r -9 $OUT * || exit 1
 zipalign 4 $OUT $OUT-aligned || exit 1
-apksigner sign --ks $ANDROID_KEYSTORE_FILE --ks-key-alias $ANDROID_KEYSTORE_ALIAS $PASS $OUT-aligned || exit 1
 mv $OUT-aligned $OUT
+apksigner sign --ks $ANDROID_KEYSTORE_FILE --ks-key-alias $ANDROID_KEYSTORE_ALIAS $PASS $OUT || exit 1

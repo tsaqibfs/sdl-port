@@ -93,3 +93,6 @@
 [submodule "project/jni/sdl2_ttf"]
 	path = project/jni/sdl2_ttf
 	url = https://github.com/libsdl-org/SDL_ttf.git
+[submodule "project/jni/sdl2_mixer"]
+	path = project/jni/sdl2_mixer
+	url = https://github.com/libsdl-org/SDL_mixer.git
