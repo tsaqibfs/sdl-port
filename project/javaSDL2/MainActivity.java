@@ -42,7 +42,6 @@ public class MainActivity extends org.libsdl.app.SDLActivity {
 		Globals.DataDir = this.getFilesDir().getAbsolutePath();
 		Settings.LoadConfig(this); // Load Globals.DataDir from SDL 1.2 installation, we never save config file
 
-		Log.i("SDL", "Checking for asset pack");
 		try
 		{
 			if( android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP )
@@ -68,10 +67,17 @@ public class MainActivity extends org.libsdl.app.SDLActivity {
 		}
 
 		Settings.setEnvVars(this);
+		Settings.nativeChdir(Globals.DataDir);
 	}
 
 	public void downloadFinishedInitSDL() {
 		// TODO: implement this
+	}
+
+	@Override
+	protected void pauseNativeThread() {
+		Log.i("SDL", "Intercepted pauseNativeThread() from MainActivity");
+		super.pauseNativeThread();
 	}
 
 	@Override
@@ -80,11 +86,13 @@ public class MainActivity extends org.libsdl.app.SDLActivity {
 		super.resumeNativeThread();
 	}
 
-
 	@Override
 	protected String[] getLibraries() {
 		ArrayList<String> ret = new ArrayList<String>();
 		for (String l: Globals.AppLibraries) {
+			ret.add(GetMappedLibraryName(l));
+		}
+		for (String l: Globals.AppMainLibraries) {
 			ret.add(GetMappedLibraryName(l));
 		}
 		return ret.toArray(new String[0]);
@@ -100,6 +108,7 @@ public class MainActivity extends org.libsdl.app.SDLActivity {
 			if (Globals.LibraryNamesMap[i][0].equals(s))
 				return Globals.LibraryNamesMap[i][1];
 		}
+		Log.v("SDL", "Loading native libraries: " + String.join(" ", ret));
 		return s;
 	}
 
