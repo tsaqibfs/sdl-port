@@ -67,6 +67,7 @@ public class MainActivity extends org.libsdl.app.SDLActivity {
 		}
 
 		Settings.setEnvVars(this);
+		Log.v("SDL", "chdir() to: " + Globals.DataDir);
 		Settings.nativeChdir(Globals.DataDir);
 	}
 
@@ -95,7 +96,7 @@ public class MainActivity extends org.libsdl.app.SDLActivity {
 		for (String l: Globals.AppMainLibraries) {
 			ret.add(GetMappedLibraryName(l));
 		}
-		Log.v("SDL", "Loading native libraries: " + String.join(" ", ret));
+		Log.i("SDL", "Loading native libraries: " + String.join(" ", ret));
 		return ret.toArray(new String[0]);
 	}
 
