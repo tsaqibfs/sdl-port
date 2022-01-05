@@ -32,6 +32,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.FrameLayout;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class MainActivity extends org.libsdl.app.SDLActivity {
 	@Override
@@ -102,7 +103,12 @@ public class MainActivity extends org.libsdl.app.SDLActivity {
 
 	@Override
 	protected String[] getArguments() {
-		return Globals.CommandLine.split(" ");
+		// Strip the first argument, it will get passed as commandline parameter by SDL2
+		ArrayList<String> ret = new ArrayList<String>(Arrays.asList(Globals.CommandLine.split(" ")));
+		if (ret.size() >= 1) {
+			ret.remove(0);
+		}
+		return ret.toArray(new String[0]);
 	}
 
 	private static String GetMappedLibraryName(final String s) {
