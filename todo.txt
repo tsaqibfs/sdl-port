@@ -39,7 +39,12 @@ TODO, which will get actually done
 
 - OpenLieroX: always dig while tapping Jump button, not just when in air.
 
-- SuperTux: update to new upstream version.
+- SuperTux: bring back jump helper.
 
-- SuperTux: right click does not work in editor.
+- SuperTux: worldmap is way laggy, bring back rect optimization.
 
+- SuperTux: Back button does not work.
+
+- SuperTux: World map resets progress after app restart.
+
+- SuperTux: Cannot save config file.
