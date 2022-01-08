@@ -81,7 +81,7 @@ $(OPENSSL): openssl/compile.sh
 $(BOOST): boost/src/build-android.sh
 	rm -rf boost/include boost/lib ; \
 	cd boost/src && \
-	./build-android.sh --boost=1.78.0 --with-iconv --arch=$(shell echo $(foreach ARCH, $(ARCHES32) $(ARCHES64),$(ARCH),) | tr -d ' ') && \
+	./build-android.sh --boost=1.78.0 --with-iconv --target-version=16 --arch=$(shell echo $(foreach ARCH, $(ARCHES32) $(ARCHES64),$(ARCH),) | tr -d ' ') && \
 	for ARCH in $(ARCHES32) $(ARCHES64); do  \
 		mkdir -p ../lib/$$ARCH ../include ; \
 		$(foreach NAME, $(BOOST_LIBS), cp -f build/out/$$ARCH/lib/libboost_$(NAME)-clang-mt-*.a ../lib/$$ARCH/libboost_$(NAME).a || exit 1 ;) \
