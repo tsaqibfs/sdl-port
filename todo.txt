@@ -39,12 +39,10 @@ TODO, which will get actually done
 
 - OpenLieroX: always dig while tapping Jump button, not just when in air.
 
-- SuperTux: bring back jump helper.
-
-- SuperTux: worldmap is way laggy, bring back rect optimization.
+- SuperTux: worldmap is way laggy.
 
 - SuperTux: Back button does not work.
 
-- SuperTux: World map resets progress after app restart.
+- SuperTux: Level editor is unusable.
 
-- SuperTux: Cannot save config file.
+- SuperTux: get_attrib_location() and get_uniform_location() should not be called for each render operation.
