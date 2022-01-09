@@ -11,9 +11,13 @@ OUT=`pwd`/../../../../SuperTux-with-data.apk
 DATAZIP=`pwd`/../../../../SuperTux-data.zip
 rm -f $OUT $OUT-aligned
 cd supertux/data || exit 1
-[ -e $DATAZIP ] || zip -r -9 $DATAZIP * || exit 1
 cp -f ../../../../../../project/app/build/outputs/apk/release/app-release.apk $OUT || exit 1
-zipmerge $OUT $DATAZIP
+if zipmerge -h >/dev/null; then
+	[ -e $DATAZIP ] || zip -r -9 $DATAZIP * || exit 1
+	zipmerge $OUT $DATAZIP || exit 1
+else
+	zip -r -9 $OUT * || exit 1
+fi
 zipalign -p 4 $OUT $OUT-aligned || exit 1
 mv $OUT-aligned $OUT
 apksigner sign --ks $ANDROID_KEYSTORE_FILE --ks-key-alias $ANDROID_KEYSTORE_ALIAS $PASS $OUT || exit 1
