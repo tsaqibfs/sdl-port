@@ -102,7 +102,7 @@ public class MainActivity extends org.libsdl.app.SDLActivity {
 		{
 			Log.i("SDL", "Data download failed!");
 			AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(this);
-			dlgAlert.setMessage(this.getResources().getString(R.string.error_dl_from, Globals.DataDownloadUrl));
+			dlgAlert.setMessage(this.getResources().getString(R.string.error_dl_from, String.join(" ", Globals.DataDownloadUrl)));
 			dlgAlert.setTitle("SDL Error");
 			dlgAlert.setPositiveButton("Exit",
 				new DialogInterface.OnClickListener() {
