@@ -110,7 +110,7 @@ SDL2 will generate additional mouse events for touchscreen and touch events for 
 	SDL_SetHint(SDL_HINT_MOUSE_TOUCH_EVENTS, "0");
 
 SDL2 will not terminate the app process and will not unload shared libraries when your main() / SDL_main() function returns,
-when the app is launched again your main() will be called again without clearing global and static variables.
+when the app is launched again your main() will be called twice without clearing global and static variables.
 To prevent this, call exit() or _exit() instead of returning from main().
 
 SDL2 by default does not allow internet access in the AndroidManifest.xml, to fix this copy the patch file
