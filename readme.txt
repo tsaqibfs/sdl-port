@@ -124,6 +124,8 @@ will report the screen size including the cutout, however it's not possible to d
 so you should use the size returned by SDL_GetWindowSize() and by SDL_WINDOWEVENT_RESIZED event,
 and you should use fullscreen window mode.
 
+SDL2 does not support Back button. You will need to draw back or pause button inside your app code.
+
 
 Licensing issues when using gradle
 ==================================
