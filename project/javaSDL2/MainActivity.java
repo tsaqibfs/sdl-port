@@ -96,6 +96,23 @@ public class MainActivity extends org.libsdl.app.SDLActivity {
 	}
 
 	public void downloadFinishedInitSDL() {
+		if (!this.dataDownloader.downloadCompete)
+		{
+			Log.i("SDL", "Data download failed!");
+			AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(this);
+			dlgAlert.setMessage(res.getString(R.string.error_dl_from, Globals.DataDownloadUrl));
+			dlgAlert.setTitle("SDL Error");
+			dlgAlert.setPositiveButton("Exit",
+				new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog,int id) {
+						System.exit(0);
+					}
+				});
+			dlgAlert.setCancelable(false);
+			dlgAlert.create().show();
+			return;
+		}
 		Log.i("SDL", "Data download finished, starting native thread");
 		this.dataDownloader = null;
 		if (this.nativeThreadResumeCaptured)

@@ -214,7 +214,6 @@ class DataDownloader extends Thread
 							downloadFiles[i].contains("<ARCH>") &&
 							! DownloadDataFile(downloadFiles[i].replace("<ARCH>", android.os.Build.CPU_ABI2), DOWNLOAD_FLAG_FILENAME + String.valueOf(i) + ".flag", count+1, total, i) ) )
 					{
-						DownloadFailed = true;
 						if (!Parent.getFilesDir().getAbsolutePath().equals(Globals.DataDir))
 						{
 							Globals.DataDir = Parent.getFilesDir().getAbsolutePath();
@@ -876,7 +875,6 @@ class DataDownloader extends Thread
 
 	public StatusWriter Status;
 	public boolean DownloadComplete = false;
-	public boolean DownloadFailed = false;
 	public boolean DownloadCanBeResumed = false;
 	private MainActivity Parent;
 	private String outFilesDir = null;
