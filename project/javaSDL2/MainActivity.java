@@ -35,13 +35,34 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class MainActivity extends org.libsdl.app.SDLActivity {
+	public static MainActivity instance = null;
+	public String ObbMountPath = null; // Deprecated, always empty
+	public String assetPackPath = null; // Not saved to the config file
+	public boolean readExternalStoragePermissionDialogAnswered = false; // Deprecated, always false
+	public boolean nativeThreadResumeCaptured = false;
+	public DataDownloader dataDownloader = null;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		this.instance = this;
 		super.onCreate(savedInstanceState);
 
 		Globals.DataDir = this.getFilesDir().getAbsolutePath();
-		Settings.LoadConfig(this); // Load Globals.DataDir from SDL 1.2 installation, we never save config file
+		Settings.settingsLoaded = Settings.LoadConfig(this); // Load Globals.DataDir from SDL 1.2 installation
+
+		if (Settings.settingsLoaded) {
+			Log.i("SDL", "libSDL: Settings.ProcessConfig(): loaded settings successfully");
+			Log.i("SDL", "libSDL: old app version " + settingsAppVersion + ", new app version " + this.getApplicationVersion());
+			if (Settings.settingsAppVersion != this.getApplicationVersion()) {
+				Settings.DeleteFilesOnUpgrade(this);
+				if (Globals.ResetSdlConfigForThisVersion) {
+					Log.i("SDL", "libSDL: old app version " + Settings.settingsAppVersion + ", new app version " + this.getApplicationVersion() + " and we need to clean up config file");
+					// Delete settings file, and restart the application
+					Settings.DeleteSdlConfigOnUpgradeAndRestart(this);
+				}
+				Settings.Save(p);
+			}
+		}
 
 		try
 		{
@@ -70,22 +91,35 @@ public class MainActivity extends org.libsdl.app.SDLActivity {
 		Settings.setEnvVars(this);
 		Log.v("SDL", "chdir() to: " + Globals.DataDir);
 		Settings.nativeChdir(Globals.DataDir);
+		Log.i("SDL", "Starting data download");
+		this.dataDownloader = new DataDownloader(this, null);
 	}
 
 	public void downloadFinishedInitSDL() {
-		// TODO: implement this
+		Log.i("SDL", "Data download finished, starting native thread");
+		this.dataDownloader = null;
+		if (this.nativeThreadResumeCaptured)
+			this.resumeNativeThread();
+		else
+			this.pauseNativeThread();
 	}
 
 	@Override
 	protected void pauseNativeThread() {
 		Log.i("SDL", "Intercepted pauseNativeThread() from MainActivity");
-		super.pauseNativeThread();
+		this.nativeThreadResumeCaptured = false;
+		if (this.dataDownloader == null) {
+			super.pauseNativeThread();
+		}
 	}
 
 	@Override
 	protected void resumeNativeThread() {
 		Log.i("SDL", "Intercepted resumeNativeThread() from MainActivity");
-		super.resumeNativeThread();
+		this.nativeThreadResumeCaptured = true;
+		if (this.dataDownloader == null) {
+			super.resumeNativeThread();
+		}
 	}
 
 	@Override
@@ -152,8 +186,4 @@ public class MainActivity extends org.libsdl.app.SDLActivity {
 		return null;
 	}
 
-	public static MainActivity instance = null;
-	public String ObbMountPath = null; // Deprecated, always empty
-	public String assetPackPath = null; // Not saved to the config file
-	public boolean readExternalStoragePermissionDialogAnswered = false; // Deprecated, always false
 }

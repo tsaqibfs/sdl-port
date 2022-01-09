@@ -192,9 +192,6 @@ class DataDownloader extends Thread
 	@Override
 	public void run()
 	{
-		if (Parent.getVideoLayout() != null)
-			Parent.getVideoLayout().setOnKeyListener(new BackKeyListener(Parent));
-
 		String [] downloadFiles = Globals.DataDownloadUrl;
 		int total = 0;
 		int count = 0;
@@ -235,8 +232,6 @@ class DataDownloader extends Thread
 			}
 		}
 		DownloadComplete = true;
-		if (Parent.getVideoLayout() != null)
-			Parent.getVideoLayout().setOnKeyListener(null);
 		initParent();
 	}
 
@@ -877,52 +872,6 @@ class DataDownloader extends Thread
 		// "obb:" or "mnt:" - same length
 		return Environment.getExternalStorageDirectory().getAbsolutePath() + "/Android/obb/" +
 				Parent.getPackageName() + "/" + url.substring("obb:".length()) + "." + Parent.getPackageName() + ".obb";
-	}
-
-	public class BackKeyListener implements View.OnKeyListener
-	{
-		MainActivity p;
-		public BackKeyListener(MainActivity _p)
-		{
-			p = _p;
-		}
-
-		@Override
-		public boolean onKey(View v, int keyCode, KeyEvent event)
-		{
-			if( DownloadFailed )
-				System.exit(1);
-
-			AlertDialog.Builder builder = new AlertDialog.Builder(p);
-			builder.setTitle(p.getResources().getString(R.string.cancel_download));
-			builder.setMessage(p.getResources().getString(R.string.cancel_download) + (DownloadCanBeResumed ? " " + p.getResources().getString(R.string.cancel_download_resume) : ""));
-			
-			builder.setPositiveButton(p.getResources().getString(R.string.yes), new DialogInterface.OnClickListener()
-			{
-				public void onClick(DialogInterface dialog, int item) 
-				{
-					System.exit(1);
-					dialog.dismiss();
-				}
-			});
-			builder.setNegativeButton(p.getResources().getString(R.string.no), new DialogInterface.OnClickListener()
-			{
-				public void onClick(DialogInterface dialog, int item) 
-				{
-					dialog.dismiss();
-				}
-			});
-			builder.setOnCancelListener(new DialogInterface.OnCancelListener()
-			{
-				public void onCancel(DialogInterface dialog)
-				{
-				}
-			});
-			AlertDialog alert = builder.create();
-			alert.setOwnerActivity(p);
-			alert.show();
-			return true;
-		}
 	}
 
 	public StatusWriter Status;
