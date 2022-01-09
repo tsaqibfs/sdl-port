@@ -1,10 +1,9 @@
+About
+=====
+
 This is SDL 1.2 ported to Google Android (also bunch of other libs included).
 Sources or patches of the individual games are in the directory project/jni/application.
-
-The libsdl.org now has an official SDL 2 Android port, which is more recent and
-better suited for creating new applications from scratch, this port is focused mainly
-on SDL 1.2 and compiling existing applications, it's up to you to decide which port is better.
-Also this port is developed very slowly, although the same is true for an official port.
+It can also build an official SDL2 Android port, with a few features on top.
 
 
 Installation
@@ -29,13 +28,14 @@ How to compile demo application
 
 Launch commands
 
+	git submodule update --init --recursive
 	./build.sh ballfield
 
 Or in separate steps
 
 	rm project/jni/application/src
 	ln -s ballfield project/jni/application/src
-	./changeAppSettings.sh -a
+	./changeAppSettings.sh
 	./build.sh
 
 Then edit file build.sh if needed to add NDK dir to your PATH, then launch it.
@@ -46,7 +46,6 @@ Then you can test it by launching Ballfield icon from Android applications menu.
 
 There are other applications inside project/jni/application directory,
 some of them are referenced using Git submodule mechanism, you may download them using command
-git submodule update --init --recursive
 Some of them may be outdated and won't compile, some contain only patch file and no sources,
 so you should check out Git logs before compiling a particular app, and checkout whole repo at that date:
 gitk project/jni/application/<directory>
@@ -65,6 +64,67 @@ Note that GL ES is NOT pure OpenGL - there are no glBegin() and glEnd() call and
 and generally it will take a lot of effort to port OpenGL application to GL ES.
 
 
+SDL2
+====
+
+To use SDL2, specify LibSdlVersion=2 inside AndroidAppSettings.cfg.
+
+SDL2 currently supports only these options from AndroidAppSettings.cfg:
+
+	AppName
+	AppFullName
+	AppVersionCode
+	AppVersionName
+	AppDataDownloadUrl
+	ResetSdlConfigForThisVersion
+	DeleteFilesOnUpgrade
+	MultiABI
+	CompiledLibraries
+	CustomBuildScript
+	AppCflags
+	AppCppflags
+	AppLdflags
+	AppOverlapsSystemHeaders
+	AppSubdirsBuild
+	AppBuildExclude
+	AppCmdline
+
+SDL2 does not support overlay screen buttons, you will need to draw and handle touch controls inside your own code.
+
+Note that the library names for SDL2 are uppercase: SDL2 SDL2_image SDL2_mixer SDL2_ttf,
+whereass for SDL 1.2 library names are lowercase: sdl-1.2 sdl_image sdl_mixer sdl_ttf.
+
+Other libraries like Boost and OpenSSL are fully supported when SDL2 is used.
+
+SDL2 will not show download/unzip progess to the user, you can use https:// links inside AppDataDownloadUrl,
+but it will appear that the app is frozen on first start.
+
+By default, SDL2 does not lock screen orientation and cha switch between portrait and landscape,
+to lock screen orientation, call this code before calling SDL_CreateWindow():
+
+	SDL_SetHint(SDL_HINT_ORIENTATIONS, "LandscapeRight LandscapeLeft");
+
+SDL2 will generate additional mouse events for touchscreen and touch events for mouse, to disable this you need to call:
+
+	SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "0");
+	SDL_SetHint(SDL_HINT_MOUSE_TOUCH_EVENTS, "0");
+
+SDL2 will not terminate the app process and will not unload shared libraries when your main() / SDL_main() function returns,
+when the app is launched again your main() will be called again without clearing global and static variables.
+To prevent this, call exit() or _exit() instead of returning from main().
+
+SDL2 by default does not allow internet access in the AndroidManifest.xml, to fix this copy the patch file
+to your app directory and run changeAppSettings.sh:
+
+	cp project/jni/application/supertux/project.diff cp project/jni/application/src/project.diff
+
+SDL2 does not support notch or display cutout.
+SDL_GetDisplayBounds() / SDL_GetDisplayUsableBounds() / SDL_GetDisplayMode() / SDL_GetCurrentDisplayMode()
+will report the screen size including the cutout, however it's not possible to draw inside the cutout area,
+so you should use the size returned by SDL_GetWindowSize() and by SDL_WINDOWEVENT_RESIZED event,
+and you should use fullscreen window mode.
+
+
 Licensing issues when using gradle
 ==================================
 
@@ -76,15 +136,18 @@ if that does not work you need to update
 
 	./sdkmanager --update
 
-Accept the license with 'y'. It might download additional stuff, yet not sure, why...
+Accept the license with 'y'. It might download additional stuff, yet not sure, why.
 
 Retry with
 
 	./sdkmanager --licenses
 
-If the system tells you that the licenses were accepted, but the build system tells otherwise, it might be looking at the wrong path. Symlinking the licenses directory might solve your problem:
+If the system tells you that the licenses were accepted, but the build system tells otherwise, it might be looking at the wrong path.
+Symlinking the licenses directory might solve your problem:
 
 	ln -s $ANDROID_HOME/licenses project
+
+If every other method fails. launch Android Studio, import 'project' directory, and try to build it once.
 
 
 How to compile your own application
@@ -126,6 +189,8 @@ Also you have to create an icon image file at project/jni/application/src/icon.p
 project/jni/application/src/AndroidData/logo.png to be used as a splash screen image.
 Then you may launch build.sh.
 
+To compile C++ code, add "c++_shared" to CompiledLibraries inside AndroidAppSettings.cfg.
+
 C++ RTTI and exceptions give very slight memory overhead, if you need them -
 add "-frtti -fexceptions" to the AppCflags inside AndroidAppSettings.cfg
 If you use autoconf/automake/configure scripts with setEnvironment.sh, you may write
@@ -145,31 +210,10 @@ If the URL in in the form ':dir/file.dat:http://URL/' it will be downloaded as b
 If the URL does not contain 'http://' or 'https://', it is treated as file from 'project/jni/application/src/AndroidData' dir -
 these files are put inside .apk package by the build system.
 
-You can also create .obb file using jobb tool, and attach it to your app on Play Store:
-
-jobb -pn xyz.yourserver.yourapp -pv 123 -d ./data -o main.123.xyz.yourserver.yourapp.obb
-
-This .obb file contains fat32 filesystem, and it will be mounted during app start if you specify:
-
-AppDataDownloadUrl="!!Game data|mnt:main.123"
-
-where "main" is your .obb type (main or patch), "123" is the .obb version code,
-taken from AppVersionCode of the app to which the .obb file is initially attached,
-and xyz.yourserver.yourapp is your app package name taken from AppFullName.
-Note that you can update the app without updating the .obb file, so this version number will stay hardcoded.
-SDL will set an environment variable "ANDROID_OBB_MOUNT_DIR" when .obb file is mounted,
-so your game code can read it's data files from the path returned by getenv("ANDROID_OBB_MOUNT_DIR").
-It will return NULL if the user deletes .obb file, or your app is installed not from Play Store,
-so you may wish to specify a backup download location:
-
-AppDataDownloadUrl="!!Game data|mnt:main.123|https://yourserver.xyz/gamedata.zip"
-
-You also need to specify ReadObbFile=y inside AndroidAppSettings.cfg.
-
 Android app bundles do not support .obb files, they use asset packs instead.
 This app project includes one pre-configured install-time asset pack.
 To put your data into asset pack, copy it to the directory AndroidData/assetpack
-and run changeAppSettings.sh. The asset pack zip archive will be returned by
+and run changeAppSettings.sh. The asset pack zip archive path will be returned by
 getenv("ANDROID_ASSET_PACK_PATH"), this call will return NULL if the asset pack is not installed.
 You can put "assetpack" keyword to AppDataDownloadUrl, the code will check
 if the asset pack is installed and will not download the data from other URLs.
