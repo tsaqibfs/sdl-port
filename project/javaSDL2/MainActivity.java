@@ -161,6 +161,7 @@ public class MainActivity extends org.libsdl.app.SDLActivity {
 		if (ret.size() >= 1) {
 			ret.remove(0);
 		}
+		Log.i("SDL", "Commandline arguments: '" + String.join("', '", ret) + "'");
 		return ret.toArray(new String[0]);
 	}
 

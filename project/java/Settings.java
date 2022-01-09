@@ -204,6 +204,15 @@ public class Settings
 
 	static boolean LoadConfig( final MainActivity p )
 	{
+		Globals.OptionalDataDownload = new boolean[Globals.DataDownloadUrl.length];
+		for( int i = 0; i < Globals.DataDownloadUrl.length; i++ )
+		{
+			if( Globals.DataDownloadUrl[i].indexOf("!") == 0 )
+			{
+				Globals.OptionalDataDownload[i] = true;
+			}
+		}
+
 		try {
 			ObjectInputStream settingsFile = new ObjectInputStream(new FileInputStream( p.getFilesDir().getAbsolutePath() + "/" + SettingsFileName ));
 			if( settingsFile.readInt() != SETTINGS_FILE_VERSION )
