@@ -23,7 +23,9 @@ package net.sourceforge.clonekeenplus;
 
 import android.app.Activity;
 import android.app.UiModeManager;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
@@ -52,7 +54,7 @@ public class MainActivity extends org.libsdl.app.SDLActivity {
 
 		if (Settings.settingsLoaded) {
 			Log.i("SDL", "libSDL: Settings.ProcessConfig(): loaded settings successfully");
-			Log.i("SDL", "libSDL: old app version " + settingsAppVersion + ", new app version " + this.getApplicationVersion());
+			Log.i("SDL", "libSDL: old app version " + Settings.settingsAppVersion + ", new app version " + this.getApplicationVersion());
 			if (Settings.settingsAppVersion != this.getApplicationVersion()) {
 				Settings.DeleteFilesOnUpgrade(this);
 				if (Globals.ResetSdlConfigForThisVersion) {
@@ -60,7 +62,7 @@ public class MainActivity extends org.libsdl.app.SDLActivity {
 					// Delete settings file, and restart the application
 					Settings.DeleteSdlConfigOnUpgradeAndRestart(this);
 				}
-				Settings.Save(p);
+				Settings.Save(this);
 			}
 		}
 
@@ -96,11 +98,11 @@ public class MainActivity extends org.libsdl.app.SDLActivity {
 	}
 
 	public void downloadFinishedInitSDL() {
-		if (!this.dataDownloader.downloadCompete)
+		if (!this.dataDownloader.DownloadComplete)
 		{
 			Log.i("SDL", "Data download failed!");
 			AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(this);
-			dlgAlert.setMessage(res.getString(R.string.error_dl_from, Globals.DataDownloadUrl));
+			dlgAlert.setMessage(this.getResources().getString(R.string.error_dl_from, Globals.DataDownloadUrl));
 			dlgAlert.setTitle("SDL Error");
 			dlgAlert.setPositiveButton("Exit",
 				new DialogInterface.OnClickListener() {
