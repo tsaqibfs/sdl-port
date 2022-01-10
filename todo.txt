@@ -19,6 +19,8 @@ TODO, which will get actually done
 
 - SDL: SD card permission dialog does nothing on Android 10.
 
+- SDL2: Back button does not work.
+
 - XSDL: use pixel size instead of video mode size, Android multiwindow support.
 
 - XSDL: proper window resizing, with xrandr resizing XSDL screen buffer.
@@ -38,10 +40,6 @@ TODO, which will get actually done
 - OpenLieroX: download speed test at humus.kvalitne.cz is not working, replace it with some default value.
 
 - OpenLieroX: always dig while tapping Jump button, not just when in air.
-
-- SuperTux: worldmap is way laggy.
-
-- SuperTux: Back button does not work.
 
 - SuperTux: Level editor is unusable.
 
