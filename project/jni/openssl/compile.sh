@@ -1,6 +1,8 @@
 #!/bin/sh
 
-ARCH_LIST="arm64-v8a armeabi-v7a x86_64 x86"
+if [ -z "$ARCH_LIST" ]; then
+	ARCH_LIST="arm64-v8a armeabi-v7a x86_64 x86"
+fi
 
 PARALLEL=false
 
@@ -93,8 +95,10 @@ else
 	done
 fi
 
+FIRSTARCH=`echo $ARCH_LIST | sed 's/ .*//'`
 rm -rf include
-cp -r -L build/arm64-v8a/include ./ || exit 1
+echo "cp -r -L build/$FIRSTARCH/include ./"
+cp -r -L build/$FIRSTARCH/include ./ || exit 1
 patch -p1 < opensslconf.h.patch || exit 1
 
 rm -rf build

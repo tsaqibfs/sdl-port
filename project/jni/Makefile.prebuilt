@@ -1,15 +1,17 @@
 # Makefile to build precompiled libraries, which cannot be built using standard NDK makefiles
-# TODO: libboost, libffmpeg, libpython (used only in GemRB)
+# TODO: libffmpeg, libpython (used only in GemRB)
 
-ARCHES32 := armeabi-v7a x86
-ARCHES64 := arm64-v8a x86_64
+ARCH_LIST ?= arm64-v8a x86_64 armeabi-v7a x86
+ifeq ($(strip $(ARCH_LIST)),all)
+	ARCH_LIST := arm64-v8a x86_64 armeabi-v7a x86
+endif
 
-ICONV := $(foreach ARCH, $(ARCHES32) $(ARCHES64), iconv/lib/$(ARCH)/libiconv.so iconv/lib/$(ARCH)/libcharset.so)
+ICONV := $(foreach ARCH, $(ARCH_LIST), iconv/lib/$(ARCH)/libiconv.so iconv/lib/$(ARCH)/libcharset.so)
 
 ICU_LIBS := icudata icui18n icuio icutest icutu icuuc iculx icu-le-hb
-ICU := $(foreach ARCH, $(ARCHES32) $(ARCHES64), $(foreach NAME, $(ICU_LIBS), icuuc/lib/$(ARCH)/lib$(NAME).a))
+ICU := $(foreach ARCH, $(ARCH_LIST), $(foreach NAME, $(ICU_LIBS), icuuc/lib/$(ARCH)/lib$(NAME).a))
 
-OPENSSL := $(foreach ARCH, $(ARCHES32) $(ARCHES64), openssl/lib-$(ARCH)/libcrypto.so.sdl.1.so openssl/lib-$(ARCH)/libssl.so.sdl.1.so)
+OPENSSL := $(foreach ARCH, $(ARCH_LIST), openssl/lib-$(ARCH)/libcrypto.so.sdl.1.so openssl/lib-$(ARCH)/libssl.so.sdl.1.so)
 
 BOOST_LIBS := \
 	atomic \
@@ -49,7 +51,7 @@ BOOST_LIBS := \
 	wserialization \
 
 
-BOOST := $(foreach ARCH, $(ARCHES32) $(ARCHES64), $(foreach NAME, $(BOOST_LIBS), boost/lib/$(ARCH)/libboost_$(NAME).a))
+BOOST := $(foreach ARCH, $(ARCH_LIST), $(foreach NAME, $(BOOST_LIBS), boost/lib/$(ARCH)/libboost_$(NAME).a))
 
 .PHONY: all boost icu openssl
 
@@ -62,9 +64,9 @@ icu: $(ICONV) $(ICU)
 openssl: $(OPENSSL)
 
 $(ICONV) $(ICU): iconv/src/build.sh
-	cd iconv/src  && \
-	./build.sh  && \
-	for ARCH in $(ARCHES32) $(ARCHES64); do  \
+	cd iconv/src && \
+	for ARCH in $(ARCH_LIST); do \
+		env ARCHS=$$ARCH ./build.sh && \
 		mkdir -p ../lib/$$ARCH ../include ; \
 		cp -f $$ARCH/libiconv.so $$ARCH/libcharset.so ../lib/$$ARCH/  ; \
 		cp -f $$ARCH/include/*.h ../include/  ; \
@@ -76,13 +78,13 @@ $(ICONV) $(ICU): iconv/src/build.sh
 	git clean -f -d -x
 
 $(OPENSSL): openssl/compile.sh
-	cd openssl && ./compile.sh
+	cd openssl && env ARCH_LIST="$(ARCH_LIST)" ./compile.sh
 
 $(BOOST): boost/src/build-android.sh
 	rm -rf boost/include boost/lib ; \
 	cd boost/src && \
-	./build-android.sh --boost=1.78.0 --with-iconv --target-version=16 --arch=$(shell echo $(foreach ARCH, $(ARCHES32) $(ARCHES64),$(ARCH),) | tr -d ' ') && \
-	for ARCH in $(ARCHES32) $(ARCHES64); do  \
+	./build-android.sh --boost=1.78.0 --with-iconv --target-version=16 --arch=$(shell echo $(foreach ARCH, $(ARCH_LIST),$(ARCH),) | tr -d ' ') && \
+	for ARCH in $(ARCH_LIST); do  \
 		mkdir -p ../lib/$$ARCH ../include ; \
 		$(foreach NAME, $(BOOST_LIBS), cp -f build/out/$$ARCH/lib/libboost_$(NAME)-clang-mt-*.a ../lib/$$ARCH/libboost_$(NAME).a || exit 1 ;) \
 		cp -r -f build/out/$$ARCH/include/boost-*/* ../include/ || exit 1 ; \
@@ -109,8 +111,8 @@ FILENAME := $(3)
 
 endef # COPY_TO_OBJ
 
-$(foreach ARCH, $(ARCHES32) $(ARCHES64), $(foreach NAME, libiconv.so libcharset.so, $(eval $(call COPY_TO_OBJ,$(ARCH),iconv/lib/$(ARCH),$(NAME)))))
+$(foreach ARCH, $(ARCH_LIST), $(foreach NAME, libiconv.so libcharset.so, $(eval $(call COPY_TO_OBJ,$(ARCH),iconv/lib/$(ARCH),$(NAME)))))
 
-$(foreach ARCH, $(ARCHES32) $(ARCHES64), $(foreach NAME, $(ICU_LIBS), $(eval $(call COPY_TO_OBJ,$(ARCH),icuuc/lib/$(ARCH),lib$(NAME).a))))
+$(foreach ARCH, $(ARCH_LIST), $(foreach NAME, $(ICU_LIBS), $(eval $(call COPY_TO_OBJ,$(ARCH),icuuc/lib/$(ARCH),lib$(NAME).a))))
 
-$(foreach ARCH, $(ARCHES32) $(ARCHES64), $(foreach NAME, libcrypto.so.sdl.1.so libssl.so.sdl.1.so, $(eval $(call COPY_TO_OBJ,$(ARCH),openssl/lib-$(ARCH),$(NAME)))))
+$(foreach ARCH, $(ARCH_LIST), $(foreach NAME, libcrypto.so.sdl.1.so libssl.so.sdl.1.so, $(eval $(call COPY_TO_OBJ,$(ARCH),openssl/lib-$(ARCH),$(NAME)))))
