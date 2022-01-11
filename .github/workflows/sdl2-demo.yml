@@ -16,7 +16,7 @@
 #     misrepresented as being the original software.
 #  3. This notice may not be removed or altered from any source distribution.
 
-name: ballfield
+name: sdl2-demo
 on:
   push:
     branches:
@@ -28,7 +28,7 @@ on:
 jobs:
   build:
     env:
-      APP_NAME: ballfield
+      APP_NAME: sdl2-demo
       # It takes one hour per one architecture to build Boost and ICU libraries, and Github limits CI script duration to 6 hours
       ARCH_LIST: armeabi-v7a arm64-v8a x86 x86_64
 
