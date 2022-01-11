@@ -9,4 +9,4 @@ if [ -e $HOME/.local/share/supertux2/tilecache ]; then
 	mkdir -p tilecache
 	cp -f $HOME/.local/share/supertux2/tilecache/* tilecache/
 fi
-zip -r -9 $OUT .
+zip -r -0 $OUT .
