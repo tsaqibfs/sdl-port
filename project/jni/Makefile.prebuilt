@@ -11,7 +11,7 @@ ICONV := $(foreach ARCH, $(ARCH_LIST), iconv/lib/$(ARCH)/libiconv.so iconv/lib/$
 ICU_LIBS := icudata icui18n icuio icutest icutu icuuc iculx icu-le-hb
 ICU := $(foreach ARCH, $(ARCH_LIST), $(foreach NAME, $(ICU_LIBS), icuuc/lib/$(ARCH)/lib$(NAME).a))
 
-OPENSSL := $(foreach ARCH, $(ARCH_LIST), openssl/lib-$(ARCH)/libcrypto.so.sdl.1.so openssl/lib-$(ARCH)/libssl.so.sdl.1.so)
+OPENSSL := $(foreach ARCH, $(ARCH_LIST), openssl/lib/$(ARCH)/libcrypto.so.sdl.1.so openssl/lib/$(ARCH)/libssl.so.sdl.1.so)
 
 BOOST_LIBS := \
 	atomic \
@@ -115,4 +115,4 @@ $(foreach ARCH, $(ARCH_LIST), $(foreach NAME, libiconv.so libcharset.so, $(eval 
 
 $(foreach ARCH, $(ARCH_LIST), $(foreach NAME, $(ICU_LIBS), $(eval $(call COPY_TO_OBJ,$(ARCH),icuuc/lib/$(ARCH),lib$(NAME).a))))
 
-$(foreach ARCH, $(ARCH_LIST), $(foreach NAME, libcrypto.so.sdl.1.so libssl.so.sdl.1.so, $(eval $(call COPY_TO_OBJ,$(ARCH),openssl/lib-$(ARCH),$(NAME)))))
+$(foreach ARCH, $(ARCH_LIST), $(foreach NAME, libcrypto.so.sdl.1.so libssl.so.sdl.1.so, $(eval $(call COPY_TO_OBJ,$(ARCH),openssl/lib/$(ARCH),$(NAME)))))

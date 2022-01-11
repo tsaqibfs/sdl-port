@@ -72,10 +72,10 @@ build() {
 
 	cd ../..
 
-	rm -rf lib-$ARCH
-	mkdir -p lib-$ARCH
-	cp build/$ARCH/libcrypto.so.sdl.1.so lib-${ARCH}/libcrypto.so.sdl.1.so || exit 1
-	cp build/$ARCH/libssl.so.sdl.1.so lib-${ARCH}/libssl.so.sdl.1.so || exit 1
+	rm -rf lib/$ARCH
+	mkdir -p lib/$ARCH
+	cp build/$ARCH/libcrypto.so.sdl.1.so lib/${ARCH}/libcrypto.so.sdl.1.so || exit 1
+	cp build/$ARCH/libssl.so.sdl.1.so lib/${ARCH}/libssl.so.sdl.1.so || exit 1
 }
 
 
