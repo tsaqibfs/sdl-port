@@ -1202,7 +1202,7 @@ if echo "$CompiledLibraries" | grep -E 'crypto|ssl' > /dev/null; then
 	make -C project/jni -f Makefile.prebuilt openssl ARCH_LIST="$MultiABI"
 fi
 
-if echo "$CompiledLibraries" | grep -E 'iconv|charset|icu|harfbuzz' > /dev/null; then
+if echo "$CompiledLibraries" | grep -E 'iconv|charset|icu' > /dev/null; then
 	make -C project/jni -f Makefile.prebuilt icu ARCH_LIST="$MultiABI"
 fi
 
