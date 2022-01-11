@@ -1,0 +1,79 @@
+#  SuperTux
+#  Copyright (C) 2021-2021 Sergii Pylypenko <x.pelya.x@gmail.com>
+#
+#  This program is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU General Public License
+#  as published by the Free Software Foundation; either version 3
+#  of the License, or (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+name: ballfield
+on:
+  push:
+    branches:
+      - '*'
+    tags:
+      - '*'
+  pull_request: {}
+
+jobs:
+  build:
+    env:
+      APP_NAME=ballfield
+      # It takes one hour per one architecture to build Boost and ICU libraries, and Github limits CI script duration to 6 hours
+      ARCH_LIST: armeabi-v7a arm64-v8a x86 x86_64
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+          submodules: false
+
+      - name: Check out submodules
+        # There are many more submodules in this repo, we don't need them all
+        run: >
+          git submodule update --init --recursive --depth=1
+          project/jni/boost/src project/jni/iconv/src
+          project/jni/sdl2 project/jni/sdl2_image
+          project/jni/sdl2_mixer project/jni/sdl2_ttf
+
+      - name: Symlink to the source dir
+        run: |
+          ln -s ${APP_NAME} project/jni/application/src
+
+      - name: Limit architectures to ARM64
+        run: |
+          sed -i "s/MultiABI=.*/MultiABI='${ARCH_LIST}'/g" project/jni/application/src/AndroidAppSettings.cfg
+
+      - name: Build Boost, ICU, and OpenSSL
+        # This takes exactly one hour on Gitlab runner
+        run: |
+          export PATH=$ANDROID_NDK_LATEST_HOME:$PATH
+          ./changeAppSettings.sh
+
+      - name: Hyper turbo build script GOOOOOOOOOOOO
+        run: |
+          export PATH=$ANDROID_NDK_LATEST_HOME:$PATH
+          ./build.sh
+
+      - name: Package
+        run: |
+          mkdir -p upload/
+          mv project/app/build/outputs/apk/release/app-release.apk upload/
+
+      # Github actions is dumb and won't let you download single files from artifacts, so break up the artifacts instead
+      - uses: actions/upload-artifact@v2
+        with:
+          name: "android-apk"
+          path: upload
+          if-no-files-found: error
