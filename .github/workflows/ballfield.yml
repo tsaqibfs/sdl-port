@@ -80,11 +80,11 @@ jobs:
       - name: Package
         run: |
           mkdir -p upload/
-          mv project/app/build/outputs/apk/release/app-release.apk upload/
+          mv project/app/build/outputs/apk/release/app-release.apk upload/${APP_NAME}.apk
 
       # Github actions is dumb and won't let you download single files from artifacts, so break up the artifacts instead
       - uses: actions/upload-artifact@v2
         with:
-          name: "android-apk"
+          name: "${APP_NAME}"
           path: upload
           if-no-files-found: error
