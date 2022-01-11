@@ -38,7 +38,7 @@ jobs:
     steps:
       - name: Setup Android SDK
         run: >
-          echo yes | sudo $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses
+          for Y in `seq 20`; do echo y; done | sudo $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses
 
       - name: Check out the repository
         uses: actions/checkout@v2
