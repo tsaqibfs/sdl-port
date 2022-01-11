@@ -58,7 +58,7 @@ jobs:
         run: |
           ln -s ${APP_NAME} project/jni/application/src
 
-      - name: Limit architectures to ARM64
+      - name: Set architectures list
         run: |
           sed -i "s/MultiABI=.*/MultiABI='${ARCH_LIST}'/g" project/jni/application/src/AndroidAppSettings.cfg
 
@@ -71,6 +71,8 @@ jobs:
       - name: Hyper turbo build script GOOOOOOOOOOOO
         run: |
           export PATH=$ANDROID_NDK_LATEST_HOME:$PATH
+          export ANDROID_SDK_ROOT=${ANDROID_SDK_ROOT}
+          export ANDROID_HOME=${ANDROID_SDK_ROOT}
           ./build.sh
 
       - name: Package
