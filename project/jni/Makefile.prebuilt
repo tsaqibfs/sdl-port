@@ -57,7 +57,7 @@ BOOST := $(foreach ARCH, $(ARCH_LIST), $(foreach NAME, $(BOOST_LIBS), boost/lib/
 
 all: $(ICONV) $(ICU) $(OPENSSL) $(BOOST)
 
-boost: $(BOOST)
+boost: $(BOOST) $(foreach NAME, $(BOOST_LIBS), boost_$(NAME))
 
 icu: $(ICONV) $(ICU)
 
@@ -88,8 +88,10 @@ $(BOOST): boost/src/build-android.sh
 		mkdir -p ../lib/$$ARCH ../include ; \
 		$(foreach NAME, $(BOOST_LIBS), cp -f build/out/$$ARCH/lib/libboost_$(NAME)-clang-mt-*.a ../lib/$$ARCH/libboost_$(NAME).a || exit 1 ;) \
 		cp -r -f build/out/$$ARCH/include/boost-*/* ../include/ || exit 1 ; \
-	done || exit 1 ; \
-	$(foreach NAME, $(BOOST_LIBS), ln -sf boost ../../boost_$(NAME) ;)
+	done || exit 1
+
+$(foreach NAME, $(BOOST_LIBS), boost_$(NAME)):
+	ln -sf boost $@
 
 iconv/src/build.sh boost/src/build-android.sh:
 	git submodule update --init --recursive
