@@ -36,6 +36,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Check out the repository
         uses: actions/checkout@v2
         with:
           fetch-depth: 1
@@ -62,7 +63,7 @@ jobs:
           export PATH=$ANDROID_NDK_LATEST_HOME:$PATH
           ./changeAppSettings.sh
 
-      - name: Setup Gradle, Android SDK licenses, and debug app signing key
+      - name: Set up Gradle and Android SDK licenses
         working-directory: project
         run: |
           for Y in `seq 20`; do echo y; done | sudo $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses
