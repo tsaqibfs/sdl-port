@@ -54,7 +54,7 @@ jobs:
           project/jni/sdl2 project/jni/sdl2_image
           project/jni/sdl2_mixer project/jni/sdl2_ttf
 
-      - name: Symlink to the source dir
+      - name: Symlink the application dir
         run: |
           ln -s ${APP_NAME} project/jni/application/src
 
@@ -63,7 +63,6 @@ jobs:
           sed -i "s/MultiABI=.*/MultiABI='${ARCH_LIST}'/g" project/jni/application/src/AndroidAppSettings.cfg
 
       - name: Build Boost, ICU, and OpenSSL
-        # This takes exactly one hour on Gitlab runner
         run: |
           export PATH=$ANDROID_NDK_LATEST_HOME:$PATH
           ./changeAppSettings.sh
@@ -73,12 +72,10 @@ jobs:
         run: |
           ./gradlew assembleRelease || true
           for Y in `seq 20`; do echo y; done | sudo $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses --sdk_root=`pwd`
-          echo local.properties:
-          cat local.properties
 
       - name: Hyper turbo build script GOOOOOOOOOOOO
         run: |
-          export PATH=$ANDROID_NDK_LATEST_HOME:$PATH
+          export PATH=$ANDROID_NDK_LATEST_HOME:$ANDROID_SDK_ROOT/build-tools/31.0.0:$PATH
           ./build.sh
 
       - name: Package
