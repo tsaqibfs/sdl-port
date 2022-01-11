@@ -10,12 +10,12 @@ PASS=
 OUT=`pwd`/../../../../SuperTux-with-data.apk
 DATAZIP=`pwd`/../../../../SuperTux-data.zip
 rm -f $OUT $OUT-aligned
+cp -f ../../../../project/app/build/outputs/apk/release/app-release.apk $OUT || exit 1
 cd supertux/data || exit 1
 if [ -e $HOME/.local/share/supertux2/tilecache ]; then
 	mkdir -p tilecache
 	cp -f $HOME/.local/share/supertux2/tilecache/* tilecache/
 fi
-cp -f ../../../../../../project/app/build/outputs/apk/release/app-release.apk $OUT || exit 1
 if zipmerge -h >/dev/null; then
 	[ -e $DATAZIP ] || zip -r -9 $DATAZIP * || exit 1
 	zipmerge $OUT $DATAZIP || exit 1
