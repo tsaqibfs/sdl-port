@@ -37,7 +37,7 @@ jobs:
 
     steps:
       - name: Setup Android SDK
-        run: >
+        run: |
           for Y in `seq 20`; do echo y; done | sudo $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses
 
       - name: Check out the repository
@@ -68,11 +68,17 @@ jobs:
           export PATH=$ANDROID_NDK_LATEST_HOME:$PATH
           ./changeAppSettings.sh
 
+      - name: Setup Gradle
+        working-directory: project
+        run: |
+          ./gradlew assembleRelease || true
+          for Y in `seq 20`; do echo y; done | sudo $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses --sdk_root=`pwd`
+          echo local.properties:
+          cat local.properties
+
       - name: Hyper turbo build script GOOOOOOOOOOOO
         run: |
           export PATH=$ANDROID_NDK_LATEST_HOME:$PATH
-          export ANDROID_SDK_ROOT=${ANDROID_SDK_ROOT}
-          export ANDROID_HOME=${ANDROID_SDK_ROOT}
           ./build.sh
 
       - name: Package
