@@ -1141,7 +1141,7 @@ else
 fi
 
 if [ -e "project/jni/application/src/AndroidData/assetpack" ] ; then
-	# Do nothing...
+	true # Do nothing...
 else
 	$SEDI "/==ASSETPACK==/ d" project/app/build.gradle
 fi
