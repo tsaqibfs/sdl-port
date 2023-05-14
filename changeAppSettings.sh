@@ -3,6 +3,7 @@
 AUTO=a
 CHANGED=
 JAVA_SRC_PATH=project/java
+[ -z "$ANDROID_SDK_ROOT" ] && ANDROID_SDK_ROOT="$ANDROID_HOME"
 
 if [ "X$1" = "X-a" ]; then
 	AUTO=a
@@ -1109,6 +1110,7 @@ done
 cd ../../..
 
 SDK_DIR=`grep '^sdk.dir' project/local.properties | sed 's/.*=//'`
+[ -z "$SDK_DIR" ] && SDK_DIR="$ANDROID_HOME"
 [ -z "$SDK_DIR" ] && SDK_DIR=`which android | sed 's@/tools/android$@@'`
 mkdir -p project/libs
 echo "sdk.dir=$SDK_DIR" > project/local.properties
@@ -1136,7 +1138,7 @@ else
 		echo "You need to update ProGuard. Download it here:"
 		echo "https://sourceforge.net/projects/proguard/files/proguard/5.3/proguard5.3.3.zip"
 		echo "Unpack it, then place file proguard.jar to $PROGUARD"
-		exit 1
+		#exit 1
 	}
 fi
 

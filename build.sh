@@ -5,6 +5,7 @@ run_apk=false
 sign_apk=false
 sign_bundle=false
 build_release=true
+[ -z "$ANDROID_SDK_ROOT" ] && ANDROID_SDK_ROOT="$ANDROID_HOME"
 
 while getopts "sirqbh" OPT
 do
