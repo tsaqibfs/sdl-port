@@ -109,7 +109,7 @@ mkdir -p staging-openttd-$VER-$1
 set -e
 
 ${CMAKE_BIN_LOC}cmake --build openttd-$VER-$1 --parallel $BUILD_NUM_CPUS --verbose;
-${CMAKE_BIN_LOC}cmake --install openttd-$VER-$1 --parallel $BUILD_NUM_CPUS --prefix ./staging-openttd-$VER-$1;
+${CMAKE_BIN_LOC}cmake --install openttd-$VER-$1 --prefix ./staging-openttd-$VER-$1;
 cp staging-openttd-$VER-$1/games/libapplication.so libapplication-$1.so;
 mkdir -p ./data
 cp -r staging-openttd-$VER-$1/share/games/application/* data/

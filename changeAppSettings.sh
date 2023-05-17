@@ -896,8 +896,18 @@ else
 	cat $F | sed "s/^package .*;/package $AppFullName;/" >> project/src/Advertisement.java
 fi
 
+if [ -z "$ANDROID_NDK_HOME" ]; then
+	export ANDROID_NDK_HOME="$(which ndk-build | sed 's@/ndk-build@@')"
+fi
+if [ -z "$ANDROID_NDK_HOME" ]; then
+	echo "Set ANDROID_NDK_HOME env variable, or put ndk-build into your PATH"
+	exit 1
+fi
+NDK_VER=$(echo ${ANDROID_NDK_HOME} | grep -Eo '[^/]+$')
+
 cat project/app/build-template.gradle | \
-	sed 's/applicationId .*/applicationId "'"$AppFullName"'"/' > \
+	sed 's/applicationId .*/applicationId "'"${AppFullName}"'"/' | \
+	sed 's/ndkVersion .*/ndkVersion "'"${NDK_VER}"'"/' > \
 	project/app/build.gradle
 
 echo "-keep class $AppFullName.** { *; }" > project/proguard-local.cfg
