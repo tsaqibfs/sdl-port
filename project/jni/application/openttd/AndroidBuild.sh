@@ -5,6 +5,9 @@ LOCAL_PATH=`cd $LOCAL_PATH && pwd`
 
 VER=build
 
+export CMAKE_BUILD_PARALLEL_LEVEL=$BUILD_NUM_CPUS
+echo CMAKE_BUILD_PARALLEL_LEVEL=$BUILD_NUM_CPUS
+
 [ -d openttd-$VER-$1 ] || mkdir -p openttd-$VER-$1/bin/baseset
 
 export ARCH=$1
@@ -100,7 +103,7 @@ export ARCH=$1
 		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
 		-DCMAKE_PREFIX_PATH=$LOCAL_PATH/../../iconv/src/$ARCH/ \
 		$NINJA_ARGS \
-		-B ./openttd-$VER-$1 --parallel $BUILD_NUM_CPUS -S ./src
+		-B ./openttd-$VER-$1 -S ./src
 
 } || exit 1
 
@@ -108,7 +111,7 @@ mkdir -p staging-openttd-$VER-$1
 
 set -e
 
-${CMAKE_BIN_LOC}cmake --build openttd-$VER-$1 --parallel $BUILD_NUM_CPUS --verbose;
+${CMAKE_BIN_LOC}cmake --build openttd-$VER-$1 --verbose;
 ${CMAKE_BIN_LOC}cmake --install openttd-$VER-$1 --prefix ./staging-openttd-$VER-$1;
 cp staging-openttd-$VER-$1/games/libapplication.so libapplication-$1.so;
 mkdir -p ./data
