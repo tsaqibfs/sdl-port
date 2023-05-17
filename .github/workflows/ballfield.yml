@@ -33,6 +33,10 @@ jobs:
       ARCH_LIST: armeabi-v7a arm64-v8a x86 x86_64
 
     runs-on: ubuntu-latest
+    uses: actions/setup-java@v2
+      with:
+        java-version: 17
+        distribution: temurin
 
     steps:
       - name: Check out the repository
