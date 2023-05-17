@@ -10,7 +10,7 @@ sign_apk=false
 sign_bundle=false
 build_release=true
 do_zipalign=true
-named_variant="sdl"
+named_variant=""
 base_app_name=""
 
 # Fix Gradle compilation error
@@ -78,6 +78,7 @@ if [ "$#" -gt 0 ]; then
 fi
 
 base_app_name=$(grep -Po 'AppFullName\=\K[[:alnum:].]+\.(?=[[:alnum:]]+)' AndroidAppSettings.cfg)
+[ -z "${named_variant}" ] && named_variant=$(grep -Po 'AppFullName\=\K[[:alnum:].]+' AndroidAppSettings.cfg | grep -Po '[[:alnum:]]+$')
 
 function project_needs_setup {
 	local app_name=$(grep -Po 'AppFullName\=\K[.[:alnum:]]+' AndroidAppSettings.cfg)

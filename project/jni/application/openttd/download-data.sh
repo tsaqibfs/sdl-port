@@ -13,6 +13,7 @@ MSX_VERSION=$(curl --fail https://cdn.openttd.org/openmsx-releases/latest.yaml |
 
 
 # Base game data
+mkdir -p ./data-plat-indp
 pushd ./data-plat-indp
 
 if ! [ -e "./opengfx-${GFX_VERSION}.tar" ]; then
