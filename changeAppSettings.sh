@@ -880,6 +880,7 @@ fi
 
 echo Patching project/AndroidManifest.xml
 cat $ANDROID_MANIFEST_TEMPLATE | \
+	sed "s/package=.*//" | \
 	sed "s/android:screenOrientation=.*/android:screenOrientation=\"$ScreenOrientation1\"/" | \
 	sed "s^android:versionCode=.*^android:versionCode=\"$AppVersionCode\"^" | \
 	sed "s^android:versionName=.*^android:versionName=\"$AppVersionName\"^" | \
