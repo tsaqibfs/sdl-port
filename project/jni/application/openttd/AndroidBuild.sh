@@ -8,6 +8,7 @@ VER=build
 [ -d openttd-$VER-$1 ] || mkdir -p openttd-$VER-$1/bin/baseset
 
 export ARCH=$1
+[ -z "$BUILD_NUM_CPUS" ] && $BUILD_NUM_CPUS=8
 
 [ -e openttd-$VER-$1/Makefile ] || {
 	CMAKE_SDL=openttd-$VER-$1/cmake/AndroidSDL.cmake
@@ -85,6 +86,8 @@ export ARCH=$1
 	else
 		NINJA_PATH=$(which ninja)
 	fi
+	NINJA_ARGS=
+	[ -n "$NINJA_PATH" ] && NINJA_ARGS="-DCMAKE_MAKE_PROGRAM=$NINJA_PATH -GNinja"
 
 	${CMAKE_BIN_LOC}cmake \
 		-DCMAKE_MODULE_PATH=$LOCAL_PATH/openttd-$VER-$1/cmake \
@@ -96,9 +99,8 @@ export ARCH=$1
 		-DHOST_BINARY_DIR=$LOCAL_PATH/build-tools \
 		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
 		-DCMAKE_PREFIX_PATH=$LOCAL_PATH/../../iconv/src/$ARCH/ \
-        -DCMAKE_MAKE_PROGRAM=$NINJA_PATH \
-        -GNinja \
-		-B ./openttd-$VER-$1 -S ./src
+		$NINJA_ARGS \
+		-B ./openttd-$VER-$1 --parallel $BUILD_NUM_CPUS -S ./src
 
 } || exit 1
 
@@ -106,8 +108,8 @@ mkdir -p staging-openttd-$VER-$1
 
 set -e
 
-${CMAKE_BIN_LOC}cmake --build openttd-$VER-$1 --verbose;
-${CMAKE_BIN_LOC}cmake --install openttd-$VER-$1 --prefix ./staging-openttd-$VER-$1;
+${CMAKE_BIN_LOC}cmake --build openttd-$VER-$1 --parallel $BUILD_NUM_CPUS --verbose;
+${CMAKE_BIN_LOC}cmake --install openttd-$VER-$1 --parallel $BUILD_NUM_CPUS --prefix ./staging-openttd-$VER-$1;
 cp staging-openttd-$VER-$1/games/libapplication.so libapplication-$1.so;
 mkdir -p ./data
 cp -r staging-openttd-$VER-$1/share/games/application/* data/

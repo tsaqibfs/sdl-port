@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 set -e
+set -x
 
 GFX_VERSION=7.1
 SFX_VERSION=1.0.3
