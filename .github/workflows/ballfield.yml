@@ -104,20 +104,24 @@ jobs:
           if [ -e upload_keystore.jks ]; then
           export ANDROID_UPLOAD_KEYSTORE_FILE=`pwd`/upload_keystore.jks
           fi
-          mkdir -p upload/
           ./sign.sh
-          mv *.apk upload/
           ./signBundle.sh
-          mv *.aab upload/
         env:
           ANDROID_KEYSTORE_PASS: "${{secrets.ANDROID_KEYSTORE_PASS}}"
           ANDROID_KEYSTORE_ALIAS: "${{secrets.ANDROID_KEYSTORE_ALIAS}}"
           ANDROID_UPLOAD_KEYSTORE_PASS: "${{secrets.ANDROID_UPLOAD_KEYSTORE_PASS}}"
           ANDROID_UPLOAD_KEYSTORE_ALIAS: "${{secrets.ANDROID_UPLOAD_KEYSTORE_ALIAS}}"
 
-      # Github actions is dumb and won't let you download single files from artifacts, so break up the artifacts instead
-      - uses: actions/upload-artifact@v2
+      - name: upload apk
+        uses: actions/upload-artifact@v3
         with:
-          name: ${{env.APP_NAME}}
-          path: upload
+          name: ${{env.APP_NAME}}.apk
+          path: *.apk
+          if-no-files-found: error
+
+      - name: upload aab
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{env.APP_NAME}}.aab
+          path: *.aab
           if-no-files-found: error
