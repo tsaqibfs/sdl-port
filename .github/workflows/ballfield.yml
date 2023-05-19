@@ -116,12 +116,12 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: ${{env.APP_NAME}}.apk
-          path: *.apk
+          path: ./*.apk
           if-no-files-found: error
 
       - name: upload aab
         uses: actions/upload-artifact@v3
         with:
           name: ${{env.APP_NAME}}.aab
-          path: *.aab
+          path: ./*.aab
           if-no-files-found: error
