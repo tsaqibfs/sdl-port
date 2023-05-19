@@ -125,3 +125,17 @@ jobs:
           name: ${{env.APP_NAME}}
           path: upload
           if-no-files-found: error
+
+      - uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ SERVICE_ACCOUNT_JSON }}
+          packageName: net.olofson.ballfield
+          releaseFiles: upload/*.aab
+          #track: beta
+          track: release
+          status: completed
+          # inAppUpdatePriority: 2
+          userFraction: 1
+          # whatsNewDirectory: distribution/whatsnew
+          # mappingFile: app/build/outputs/mapping/release/mapping.txt
+          # debugSymbols: app/intermediates/merged_native_libs/release/out/lib
