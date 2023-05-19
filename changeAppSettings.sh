@@ -907,6 +907,7 @@ NDK_VER=$(echo ${ANDROID_NDK_HOME} | grep -Eo '[^/]+$')
 
 cat project/app/build-template.gradle | \
 	sed 's/applicationId .*/applicationId "'"${AppFullName}"'"/' | \
+	sed 's/namespace .*/namespace '"'"${AppFullName}"'"'/' | \
 	sed 's/ndkVersion .*/ndkVersion "'"${NDK_VER}"'"/' > \
 	project/app/build.gradle
 
