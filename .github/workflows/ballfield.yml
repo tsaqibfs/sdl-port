@@ -132,7 +132,7 @@ jobs:
           packageName: net.olofson.ballfield
           releaseFiles: upload/*.aab
           #track: beta
-          track: release
+          track: production
           status: completed
           # inAppUpdatePriority: 2
           # userFraction: 1
