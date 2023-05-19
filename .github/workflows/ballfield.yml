@@ -121,3 +121,9 @@ jobs:
           name: ${{env.APP_NAME}}
           path: upload
           if-no-files-found: error
+
+      - name: Authenticate to Google Cloud
+        uses: 'google-github-actions/auth@v1'
+        with:
+          workload_identity_provider: 'projects/948657225981/locations/global/workloadIdentityPools/my-pool/providers/my-provider'
+          service_account: github-auto-publish@pc-api-8387589286898375037-636.iam.gserviceaccount.com
