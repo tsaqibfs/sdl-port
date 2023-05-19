@@ -68,14 +68,14 @@ jobs:
 
       - name: Get ICU revision
         id: icu-rev
-        run: echo "::set-output name=ICU_REV::`git -C project/jni/iconv/src rev-parse HEAD`:`echo ${ARCH_LIST} | sed 's/ /:/g'`"
+        run: echo "ICU_REV=`git -C project/jni/iconv/src rev-parse HEAD`:`echo ${ARCH_LIST} | sed 's/ /:/g'`" >> $GITHUB_ENV
 
       - name: Copy ICU libraries from cache
         uses: actions/cache@v2
         id: cache-icu
         with:
           # The same SDL revision will produce the same libraries
-          key: ${{steps.icu-rev.outputs.ICU_REV}}
+          key: ${{env.ICU_REV}}
           path: |
             project/jni/iconv/include
             project/jni/iconv/lib

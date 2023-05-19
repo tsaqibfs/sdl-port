@@ -106,6 +106,7 @@ jobs:
           fi
           ./sign.sh
           ./signBundle.sh
+          rm -f app-release.apk
         env:
           ANDROID_KEYSTORE_PASS: "${{secrets.ANDROID_KEYSTORE_PASS}}"
           ANDROID_KEYSTORE_ALIAS: "${{secrets.ANDROID_KEYSTORE_ALIAS}}"
