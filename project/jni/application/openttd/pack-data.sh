@@ -32,7 +32,7 @@ ANDROID_DATA_FULLPATH=$(realpath ./AndroidData/)
 # ICU
 # TODO handle versioning. Use Makefile var
 [ -e ${ANDROID_DATA_FULLPATH}/icudt62l.zip.xz ] && [ -n "$NO_REBUILD_DATA" ] || {
-	pushd ../../iconv/src/$ARCH/
+	pushd ../../icuuc
 	rm -f ${ANDROID_DATA_FULLPATH}/icudt62l.zip.xz ${ANDROID_DATA_FULLPATH}/icudt62l.zip
 	zip -0 ${ANDROID_DATA_FULLPATH}/icudt62l.zip share/icu/62.1/icudt62l.dat && xz -8 ${ANDROID_DATA_FULLPATH}/icudt62l.zip
 	popd

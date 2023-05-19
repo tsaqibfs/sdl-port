@@ -68,7 +68,7 @@ jobs:
 
       - name: Get ICU revision
         id: icu-rev
-        run: echo "ICU_REV=`git -C project/jni/iconv/src rev-parse HEAD`:`echo ${ARCH_LIST} | sed 's/ /:/g'`" >> $GITHUB_ENV
+        run: echo "ICU_REV=`git -C project/jni/iconv/src rev-parse HEAD`::`echo ${ARCH_LIST} | sed 's/ /:/g'`" >> $GITHUB_ENV
 
       - name: Copy ICU libraries from cache
         uses: actions/cache@v2
@@ -81,10 +81,11 @@ jobs:
             project/jni/iconv/lib
             project/jni/icuuc/include
             project/jni/icuuc/lib
+            project/jni/icuuc/share/icu
 
       - name: Touch cached ICU timestamps
         if: steps.cache-icu.outputs.cache-hit == 'true'
-        run: touch project/jni/iconv/lib/*/* project/jni/icuuc/lib/*/* || true
+        run: touch project/jni/iconv/lib/*/* project/jni/icuuc/lib/*/* project/jni/icuuc/share/icu/*/* || true
 
       - name: Patch Java files and build Boost, ICU, and OpenSSL
         run: |
