@@ -775,7 +775,7 @@ for KEY in $RedefinedKeysFourthGamepad; do
 done
 
 if [ "$APP_PLATFORM" = "" ]; then
-	APP_PLATFORM=android-16
+	APP_PLATFORM=android-19
 fi
 
 if [ "$MultiABI" = "y" ] ; then
