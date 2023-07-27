@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if [ -z "$ARCH_LIST" ] | [ "$ARCH_LIST" = "all" ]; then
+if [ -z "$ARCH_LIST" ] || [ "$ARCH_LIST" = "all" ]; then
 	ARCH_LIST="arm64-v8a armeabi-v7a x86_64 x86"
 fi
 
