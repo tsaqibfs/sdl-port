@@ -498,7 +498,7 @@ HorizontalOrientation=false
 
 UsingSdl2=false
 if [ "$LibSdlVersion" = "2.0" ] ; then
-	"$LibSdlVersion"="2"
+	LibSdlVersion="2"
 fi
 if [ "$LibSdlVersion" = "2" ] ; then
 	UsingSdl2=true
