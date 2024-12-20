@@ -1,9 +1,8 @@
 About
 =====
 
-This is SDL 1.2 ported to Google Android (also bunch of other libs included).
+This is SDL 2 (focused) ported to Google Android (also bunch of other libs included).
 Sources or patches of the individual games are in the directory project/jni/application.
-It can also build an official SDL2 Android port, with a few features on top.
 
 
 Installation
@@ -19,7 +18,7 @@ The most supported environment for this port is Linux, MacOs should be okay too.
 If you're developing under Windows, you will need to install some Linux environment,
 such as Bash shell on Windows 10, or Portable Ubuntu, then install Linux toolchain on it.
 https://msdn.microsoft.com/en-us/commandline/wsl/install_guide
-https://sourceforge.net/projects/portableubuntu/
+https://sourceforge.net/projects/portableubuntu/ 
 Cygwin is not supported by the NDK.
 
 
@@ -91,8 +90,7 @@ SDL2 currently supports only these options from AndroidAppSettings.cfg:
 
 SDL2 does not support overlay screen buttons, you will need to draw and handle touch controls inside your own code.
 
-Note that the library names for SDL2 are uppercase: SDL2 SDL2_image SDL2_mixer SDL2_ttf,
-whereass for SDL 1.2 library names are lowercase: sdl-1.2 sdl_image sdl_mixer sdl_ttf.
+Note that the library names for SDL2 are uppercase: SDL2 SDL2_image SDL2_mixer SDL2_ttf.
 
 Other libraries like Boost and OpenSSL are fully supported when SDL2 is used.
 
